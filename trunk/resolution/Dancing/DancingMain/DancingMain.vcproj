@@ -200,6 +200,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\DancingGuiSys.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\DancingMain.cpp"
 				>
 			</File>
@@ -211,6 +215,10 @@
 			>
 			<File
 				RelativePath=".\include\BaseApplication.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\DancingGuiSys.h"
 				>
 			</File>
 			<File
