@@ -124,9 +124,9 @@ private:
     std::vector<OgreBites::Widget *> mWidget_vec;
 
 
-	OgreBites::Button* mButton;
+	//OgreBites::Button* mButton;
     //只为在OgreNone中设置位置所用，避免每次重新申请的麻烦
-    Ogre::OverlayElement *mOverlayElement;
+    //Ogre::OverlayElement *mOverlayElement;
 
 
 
