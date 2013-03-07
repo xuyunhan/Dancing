@@ -128,9 +128,14 @@ void BaseApplication::createFrameListener(void)
     Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
 
     mTrayMgr = new OgreBites::SdkTrayManager("InterfaceName", mWindow, mMouse, this);
-    mTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
-    mTrayMgr->showLogo(OgreBites::TL_BOTTOMRIGHT);
-    mTrayMgr->hideCursor();
+
+    //fux
+    mDancingGuiSys = new DancingGuiSys(mTrayMgr);
+	
+mDancingGuiSys->setWidgetBaseState();
+    //mTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
+    //mTrayMgr->showLogo(OgreBites::TL_TOPLEFT);
+    //mTrayMgr->hideCursor();
 
     // create a params panel for displaying sample details
     Ogre::StringVector items;
@@ -432,4 +437,32 @@ void BaseApplication::windowClosed(Ogre::RenderWindow *rw)
             mInputManager = 0;
         }
     }
+}
+void BaseApplication::buttonHit(Button *button)
+{
+    this->mDancingGuiSys->buttonHit(button);
+}
+void BaseApplication::itemSelected(SelectMenu *menu)
+{
+    this->mDancingGuiSys->itemSelected(menu);
+}
+void BaseApplication::labelHit(Label *label)
+{
+    this->mDancingGuiSys->labelHit(label);
+}
+void BaseApplication::sliderMoved(Slider *slider)
+{
+    this->mDancingGuiSys->sliderMoved(slider);
+}
+void BaseApplication::checkBoxToggled(CheckBox *box)
+{
+    this->mDancingGuiSys->checkBoxToggled(box);
+}
+void BaseApplication::okDialogClosed(const Ogre::DisplayString &message)
+{
+    this->mDancingGuiSys->okDialogClosed(message);
+}
+void BaseApplication::yesNoDialogClosed(const Ogre::DisplayString &question, bool yesHit)
+{
+    this->mDancingGuiSys->yesNoDialogClosed(question, yesHit);
 }
