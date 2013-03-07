@@ -131,10 +131,10 @@ void BaseApplication::createFrameListener(void)
 
     //fux
     mDancingGuiSys = new DancingGuiSys(mTrayMgr);
-	
-mDancingGuiSys->setWidgetBaseState();
+
+    mDancingGuiSys->setWidgetBaseState();
     //mTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
-    //mTrayMgr->showLogo(OgreBites::TL_TOPLEFT);
+    mTrayMgr->showLogo(OgreBites::TL_TOPLEFT);
     //mTrayMgr->hideCursor();
 
     // create a params panel for displaying sample details

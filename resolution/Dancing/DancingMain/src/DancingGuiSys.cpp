@@ -18,16 +18,23 @@ DancingGuiSys::DancingGuiSys(OgreBites::SdkTrayManager *sdktraymanager)
 void DancingGuiSys::setWidgetBaseState()
 {
     this->mCurrentWidgetType = BaseState;
-    this->mTrayMgr->destroyAllWidgets();
-    mTrayMgr->showLogo(OgreBites::TL_TOPLEFT);
+    //删除以往界面中的控件
+    vector<OgreBites::Widget *>::iterator tempIte = this->mWidget_vec.begin();
+    for (; tempIte != this->mWidget_vec.end(); ++tempIte)
+    {
+        this->mTrayMgr->destroyWidget(*tempIte);
+    }
+    //清空界面控件列表
+    mWidget_vec.clear();
+
 
 
 
     Button *tempButton = this->mTrayMgr->createButton(OgreBites::TL_NONE, "startgame", "startgame");
     this->mWidget_vec.push_back(tempButton);
 
-    this->mOverlayElement = tempButton->getOverlayElement();
-    mOverlayElement->setPosition(100, 100);
+    tempButton->getOverlayElement()->setPosition(100, 100);
+ 
 
 }
 void DancingGuiSys::setWidgetCreateRole()
@@ -60,12 +67,22 @@ void DancingGuiSys::setWidgetCreateRole()
 void DancingGuiSys::setWidgetGameSet()
 {
     this->mCurrentWidgetType = GameSet;
-    this->mTrayMgr->destroyWidget(mButton);
+    //删除以往界面中的控件
+    vector<OgreBites::Widget *>::iterator tempIte = this->mWidget_vec.begin();
+    for (; tempIte != this->mWidget_vec.end(); ++tempIte)
+    {
+        this->mTrayMgr->destroyWidget(*tempIte);
+    }
+    //清空界面控件列表
+    mWidget_vec.clear();
 
-    mButton = this->mTrayMgr->createButton(OgreBites::TL_NONE, "gameset", "gameset");
 
-    mOverlayElement = mButton->getOverlayElement();
-    mOverlayElement->setPosition(400, 400);
+
+    Button *tempButton = this->mTrayMgr->createButton(OgreBites::TL_NONE, "gameset", "gameset");
+	 this->mWidget_vec.push_back(tempButton);
+
+    tempButton->getOverlayElement()->setPosition(400, 400);
+
 
 
 }
@@ -73,6 +90,8 @@ void DancingGuiSys::setWidgetCreateHouse()
 {
 
     this->mCurrentWidgetType = CreateHouse;
+
+
     vector<OgreBites::Widget *>::iterator tempIte = this->mWidget_vec.begin();
     for (; tempIte != this->mWidget_vec.end(); ++tempIte)
     {
@@ -84,8 +103,7 @@ void DancingGuiSys::setWidgetCreateHouse()
     Button *tempButton = this->mTrayMgr->createButton(OgreBites::TL_NONE, "createhouse", "createhouse");
     this->mWidget_vec.push_back(tempButton);
 
-    mOverlayElement = tempButton->getOverlayElement();
-    mOverlayElement->setPosition(200, 200);
+    tempButton->getOverlayElement()->setPosition(200, 200);
 
 
 
@@ -93,12 +111,21 @@ void DancingGuiSys::setWidgetCreateHouse()
 void DancingGuiSys::setWidgetHoused()
 {
     this->mCurrentWidgetType = Housed;
-    this->mTrayMgr->destroyWidget(mButton);
 
-    mButton = this->mTrayMgr->createButton(OgreBites::TL_NONE, "housed", "housed");
+    //删除以往界面中的控件
+    vector<OgreBites::Widget *>::iterator tempIte = this->mWidget_vec.begin();
+    for (; tempIte != this->mWidget_vec.end(); ++tempIte)
+    {
+        this->mTrayMgr->destroyWidget(*tempIte);
+    }
+    //清空界面控件列表
+    mWidget_vec.clear();
 
-    mOverlayElement = mButton->getOverlayElement();
-    mOverlayElement->setPosition(100, 100);
+    Button *tempButton = this->mTrayMgr->createButton(OgreBites::TL_NONE, "housed", "housed");
+	 this->mWidget_vec.push_back(tempButton);
+
+    tempButton->getOverlayElement()->setPosition(100, 100);
+   
 
 }
 
