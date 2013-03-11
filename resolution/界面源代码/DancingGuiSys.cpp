@@ -16,6 +16,8 @@ DancingGuiSys::DancingGuiSys(OgreBites::SdkTrayManager *sdktraymanager,Ogre::Roo
 	this->mRoot = mRoot;
 	//默认单人模式
 	m_gameStyle = 1;
+	//默认卡通形象
+	m_roleStyle = 1;
     //默认状态
     mCurrentWidgetType = BaseState;
    // this->ConfigGuiInfo();
@@ -253,7 +255,20 @@ void DancingGuiSys::setWidgetCreateRole()
 	image->getOverlayElement()->setDimensions(210,350);
 	image->getOverlayElement()->setPosition(580,130);
 	this->mWidget_vec.push_back(image);
-	//image->getOverlayElement()->setMaterialName("");
+	
+
+	//实时建模和卡通形象
+	role_cartoon = mTrayMgr->createCheckBox(OgreBites::TL_NONE,"Cartoon_Role",Ogre::DisplayString(L"卡通形象"),100);
+	this->mWidget_vec.push_back(role_cartoon);
+	role_cartoon->getOverlayElement()->setPosition(560,500);
+	if(this->m_roleStyle == 1)
+	role_cartoon->setChecked(true,false);
+
+	role_real = mTrayMgr->createCheckBox(OgreBites::TL_NONE,"Real_Role",Ogre::DisplayString(L"实时建模"),100);
+	this->mWidget_vec.push_back(role_real);
+	role_real->getOverlayElement()->setPosition(700,500);
+	if(this->m_roleStyle == 2)
+	role_real->setChecked(true,false);
 
 
 	//创建角色 按钮
@@ -545,6 +560,7 @@ void DancingGuiSys::setWidgetCreateHouse()
 	OgreBites::Button *quitGame = mTrayMgr->createButton(OgreBites::TL_NONE,"QuitGame_CreateHouse",Ogre::DisplayString(L"退出"),100);
 	quitGame->getOverlayElement()->setDimensions(100,50);
 	quitGame->getOverlayElement()->setPosition(610,620);
+	quitGame->getOverlayElement()->setColour(Ogre::ColourValue(145,223,100));
 	this->mWidget_vec.push_back(quitGame);
 
 }//startgame createhouse createrole gameset housed
@@ -607,9 +623,7 @@ void DancingGuiSys::setWidgetCreateHouse()
 		mLabel_vec[i]->getOverlayElement()->setPosition(pLeft,pTop);
 		pLeft += 150;
 		this->mWidget_vec.push_back(mLabel_vec[i]);
-	}
-   
-	
+	}	
 }*/
 
 WidgetType DancingGuiSys::getCurrentWidgetType()
@@ -618,8 +632,8 @@ WidgetType DancingGuiSys::getCurrentWidgetType()
 }
 void DancingGuiSys::setCurrentWidgetType()
 {
-}
 
+}
 
 void DancingGuiSys::buttonHit(Button *button)
 {  
@@ -635,17 +649,20 @@ void DancingGuiSys::buttonHit(Button *button)
 	}
 	else if(btnName == Ogre::String("AboutUs"))
 	{
-		mTrayMgr->showOkDialog(Ogre::DisplayString(L"关于我们"),Ogre::DisplayString("tell me about you"));
+		 mTrayMgr->showOkDialog(Ogre::DisplayString(L"关于我们"),"Xi'an Universty of Science and Techonology 2013-3");
+		//TextBox *aboutBox = mTrayMgr->createTextBox(OgreBites::TL_CENTER,"Info_AboutUs",Ogre::DisplayString(L"关于我们"),300,300);
+		//aboutBox->setText(Ogre::DisplayString(L"Xi'an University of Science and Techonology  2013-3"));
 	}
 	else
 	{
 		mMap.clear();
-	this->ConfigGuiInfo();
-    mPair.first = this->mCurrentWidgetType;
-    mPair.second = btnName;
-    functionPoint temp = this->mMap[mPair];
-    (this->*temp)();
+	    this->ConfigGuiInfo();
+        mPair.first = this->mCurrentWidgetType;
+        mPair.second = btnName;
+        functionPoint temp = this->mMap[mPair];
+        (this->*temp)();
 	}
+	
 }
 void DancingGuiSys::itemSelected(SelectMenu *menu)
 {
@@ -693,8 +710,40 @@ void DancingGuiSys::checkBoxToggled(CheckBox *box)
 		if(box->isChecked())
 		this->maleBox->setChecked(false,false);
 	}
-	
+	else if(boxName == Ogre::String("Cartoon_Role"))
+	{   
+		this->m_roleStyle = 1;
+		//处理卡通形象
+		if(box->isChecked())
+		{
+			this->role_real->setChecked(false,false);
+			//this->setWidgetCreateRole();
+			//对应的操作
+		}
+	}
+	else if(boxName == Ogre::String("Real_Role"))
+	{   
+		this->m_roleStyle = 2;
+		//处理实时建模
+		if(box->isChecked())
+		{
+			//对应的操作
+			this->setRealRoleValue();
+			this->role_cartoon->setChecked(false,false);
+
+			
+			//this->setWidgetCreateRole();
+		}
+	}	
 }
+void DancingGuiSys::setRealRoleValue()
+{
+	mTrayMgr->showOkDialog("Role_Build","Certain you camera is on And put your face right before your camera");
+	
+	//改变现实的形象
+	//。。。
+}
+
 void DancingGuiSys::okDialogClosed(const Ogre::DisplayString &message)
 {
 }
