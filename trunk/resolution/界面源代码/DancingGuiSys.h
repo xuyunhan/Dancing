@@ -67,7 +67,8 @@ public:
     void setWidgetCreateHouse();
     // void setWidgetHoused();
 	void setGameStart();
-	
+	void setRealRoleValue();
+
 
     /*******************************************************************
     * 函数名称：
@@ -130,11 +131,14 @@ private:
 
 	//游戏模式：单人/局域网对战   1-单人  2-局域网
 	int  m_gameStyle;
+	//游戏时采用卡通形象还是实时建模的形象 1-卡通 2-实时建模
+	int  m_roleStyle;
 
 	//OgreBites::Button* mButton;
     //只为在OgreNone中设置位置所用，避免每次重新申请的麻烦
     //Ogre::OverlayElement *mOverlayElement;
 
+	
 	//把局域网和单人模式的控件设为成员变量，控制界面跳转方式
 	CheckBox  *singleBox;
 	CheckBox  *multiBox;
@@ -143,5 +147,8 @@ private:
 	CheckBox  *maleBox;
 	CheckBox  *femaleBox;
 
+	//卡通形象、实时建模的复选框
+	CheckBox *role_cartoon;
+	CheckBox *role_real;
 };
 #endif
