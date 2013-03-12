@@ -1,0 +1,5 @@
+tga、mesh、skeleton放在\OGRE\ogre_src_v1-7-4\Samples\Media\models里
+
+material放在\OGRE\ogre_src_v1-7-4\Samples\Media\materials\scripts里
+
+左上角的按钮进入下一个动作  右上角进入鼠标控制骨骼模式，再按一次退出
