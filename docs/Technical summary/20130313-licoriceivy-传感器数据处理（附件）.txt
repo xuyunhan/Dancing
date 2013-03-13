@@ -1,0 +1,129 @@
+#includ <iostream>
+using namespace std;
+
+class AccVelCantainer
+{
+private:
+	//三个方向上的加速度
+	float m_avX;
+	float m_avY;
+	float m_avZ;
+	//合加速度
+	float m_av;
+
+	//三个方向上的电压
+	float m_voltageX;
+	float m_voltageY;
+	float m_voltageZ;
+	//加速度为0时的电压
+	float m_voltage0;
+
+	//三个方向轴与重力加速度所在的竖直方向的夹角
+	float m_angleX;
+	float m_angleY;
+	float m_angleZ;
+public:
+	//构造函数，参数为：从传感器那得到的加速度为0时传感器输出的电压
+	AccVelCantainer(float V0);
+	~AccVelCantainer();
+    
+	//实时获取传感器某一时刻在三个方向上的加速度
+	void acquireAccVel(float ax,float ay,float az);
+    
+	//实时获取传感器某一时刻在三个方向上的电压值
+	void acquireVoltage(float vx,float vy,float vz);
+	
+	//通过四个电压（x,y,z和初始电压）和重力加速度g以及传感器灵敏度k算出三个方向与竖直方向夹角
+    void calAngle();
+	
+	//计算速度
+	void calSpeed();
+
+	//计算位移
+	void calDisplacement();
+
+	//计算位置
+	void calPosition();
+};
+
+AccVelCantainer::AccVelCantainer(float V0)
+{
+	//事先测好当加速度为0时，传感器输出的电压，将值保存下来
+}
+
+void AccVelCantainer::acquireAccVel(float ax,float ay,float az)
+{
+	//将每个时刻传感器得到的加速度值赋给成员变量保存
+}
+
+void AccVelCantainer::acquireVoltage(float vx,float vy,float vz)
+{
+	//将每个时刻传感器得到的电压值给成员变量保存
+}
+
+
+void AccVelCantainer::calAngle()
+{
+	/*x方向上的电压：Vx = kgcos(a) + V0;
+    y方向上的电压：Vy = kgcos(b) + V0;
+	z方向上的电压：Vz = kgcos(c) + V0;
+	a,b,c为三个方向分别与竖直方向的夹角；
+	通过对a，b，c求反函数，可得到：
+	a = arcos((Vx-V0)/kg);
+	b = arcos((Vy-V0)/kg);
+	a = arcos((Vz-V0)/kg);*/
+
+	//即求出了三个方向上与竖直方向夹角
+}
+
+void AccVelCantainer::calSpeed()
+{
+	//对加速度进行时间上的积分
+}
+
+void AccVelCantainer::calDisplacement()
+{
+	//对加速度进行二次积分
+}
+
+void AccVelCantainer::calDisplacement()
+{
+	//位置为：初始位置+位移
+	//以传感器的位置为初始位置
+}
+
+
+
+void judgeDirection()
+{
+	//通过加速度的方向判断运动方向
+	//方案：定义重力加速度的方向为正方向，然后判断合加速度的方向与重力加速度的方向的夹角，从而判断运动方向
+}
+
+void judgeMotion()
+{
+	//判断动作
+	//方案：通过计算三个方向与竖直方向的夹角判断动作
+	/*
+	  游戏的动作库中的每个动作定义一个标准的夹角数据，游戏正式开始后，通过比对标准夹角数据和游戏中玩家的夹角数据
+	  通过一定的误差范围的判断使电脑模型做出相应的动作
+	*/
+
+	/*
+	玩家做动作：
+	if(计算玩家得到的各个方向与竖直方向的夹角  最近似于  标准中存储的某个动作各个方向与竖直方向的夹角）(给出一个判断的范围)
+	{
+		     模型做该动作；
+
+			 if(玩家所做动作与应该做的动作吻合）
+			      玩家得分；
+             else 
+			      玩家不得分；
+
+			 下一个动作；
+	}
+	else { 
+	模型不做任何动作；
+	玩家不得分；
+	}
+}
