@@ -1,0 +1,7 @@
+帧数区间 Ogre中AnimationState的名称 中文注释
+0-50	niupiguyaobai 扭屁股摇摆
+50-124 zhuanquan 转圈
+124-170 wanyao 弯腰
+170-206 qishen 起身
+206-220 shangxiafanshou 上下翻手
+220-242 shoufangxia 手放下
