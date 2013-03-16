@@ -21,6 +21,8 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "ParseXml.h"
+
 using namespace std;
 using namespace OgreBites;
 //窗口类型   即应用程序有几个界面
@@ -68,7 +70,7 @@ public:
     // void setWidgetHoused();
     void setWidgetGameStart();
     void setWidgetGameOver();
-	void setWidgetAboutMe();
+    void setWidgetAboutMe();
 
 
     /*******************************************************************
@@ -164,6 +166,11 @@ private:
 
     //无奈的变量
     OgreBites::TextBox *mTextBox;
+
+    //xml
+    ParseXml *mParseXml;
+
+
 
 };
 #endif

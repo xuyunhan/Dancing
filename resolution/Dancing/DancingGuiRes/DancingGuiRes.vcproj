@@ -68,7 +68,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OgreMain_d.lib OIS_d.lib"
+				AdditionalDependencies="OgreMain_d.lib OIS_d.lib  tinyxml.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OGRE_HOME)\lib\debug;$(OGRE_HOME)\boost_1_44\lib"
@@ -212,6 +212,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\ParseXml.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\SampleBrowser.cpp"
 				>
 			</File>
@@ -227,6 +231,10 @@
 			</File>
 			<File
 				RelativePath=".\include\FileSystemLayerImpl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\ParseXml.h"
 				>
 			</File>
 			<File
