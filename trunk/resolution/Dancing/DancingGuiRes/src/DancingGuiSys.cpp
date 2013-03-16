@@ -1,6 +1,7 @@
 #include "DancingGuiSys.h"
 
-
+int print_result_cb(void *data, int n_columns, char **column_values, char **column_names);
+void print_row(int n_values, char **values);
 DancingGuiSys::DancingGuiSys(void)
 {
 }
@@ -12,6 +13,12 @@ DancingGuiSys::~DancingGuiSys(void)
 //这里传了两个参数，第二个参数是为了控制游戏退出
 DancingGuiSys::DancingGuiSys(OgreBites::SdkTrayManager *sdktraymanager, Ogre::Root *mRoot)
 {
+
+    mParseXml = new ParseXml();
+    // mParseXml->inputRolesFile();
+    //mParseXml->readRolesFile();
+
+
     this->mTrayMgr = sdktraymanager;
     this->mRoot = mRoot;
     //默认单人模式
@@ -427,7 +434,7 @@ void DancingGuiSys::setWidgetCreateHouse()
     leftSeats->getOverlayElement()->setDimensions(120, 30);
     leftSeats->getOverlayElement()->setPosition(330, 140);
 
-    //14个显示房间的标签的名称
+    /**///14个显示房间的标签的名称
     Ogre::StringVector labelString;
     labelString.push_back("house_1");
     labelString.push_back("house_2");
@@ -445,10 +452,51 @@ void DancingGuiSys::setWidgetCreateHouse()
     labelString.push_back("house_14");
 
 
+    /*******************************************************************
+    * 功    能：根据houses.xml文件动态生成房间列表【该列表点击后应有所表示，即左移或右移一点】
+    * 参    数：
+    * 返 回 值：
+    * 作    者：fux
+    * 电子邮箱：10809148@qq.com
+    * 日    期：2013年3月14日
+    *******************************************************************/
+    TiXmlDocument *myDocument = new TiXmlDocument("houses.xml");
+    myDocument->LoadFile();
+    //获得根元素，即Persons。
+    TiXmlElement *RootElement = myDocument->RootElement();//roles
+
+    TiXmlElement *Person = RootElement->FirstChildElement();
+
     //临时的vector容器用来存储14个显示房间的标签
     std::vector<OgreBites::Label *> mLabel_vec;
     Ogre::Real pTop = 170;
-    for(int i = 0; i < 14; i++)
+
+    for(int i = 0; Person != 0 && i < 14; ++i, Person = Person->NextSiblingElement())
+    {
+
+        string temp_str = "  ";
+        temp_str += Person->Attribute("name");//+Person->Attribute("dancestyle")+"                "+j;
+        temp_str += "              ";
+        temp_str += Person->Attribute("dancestyle");
+        temp_str += "               ";
+        temp_str += Person->Attribute("site");
+        //把14个标签用来显示房间的信息
+        mLabel_vec.push_back(mTrayMgr->createLabel(OgreBites::TL_NONE, labelString[i], temp_str, 360));
+        mLabel_vec[i]->getOverlayElement()->setDimensions(360, 30);
+        mLabel_vec[i]->getOverlayElement()->setPosition(90, pTop);
+        pTop += 30;
+        this->mWidget_vec.push_back(mLabel_vec[i]);
+
+
+    }
+
+
+
+
+
+
+
+    /*for(int i = 0; i < 14; i++)
     {
         //把14个标签用来显示房间的信息
         mLabel_vec.push_back(mTrayMgr->createLabel(OgreBites::TL_NONE, labelString[i], "", 360));
@@ -456,7 +504,7 @@ void DancingGuiSys::setWidgetCreateHouse()
         mLabel_vec[i]->getOverlayElement()->setPosition(90, pTop);
         pTop += 30;
         this->mWidget_vec.push_back(mLabel_vec[i]);
-    }
+    }*/
 
     //竖直线划分区域
     OgreBites::Separator *cutSeparator = mTrayMgr->createSeparator(OgreBites::TL_NONE, "Se_Cut", 3);
@@ -485,9 +533,9 @@ void DancingGuiSys::setWidgetCreateHouse()
     top -= 10;
     left += 120;//left 670,top 130
     //房间名称输入框
-	mTextBox = mTrayMgr->createTextBox(OgreBites::TL_NONE, "T_RoomName",  Ogre::DisplayString(L"请输入房间名称"), 200, 100);
+    mTextBox = mTrayMgr->createTextBox(OgreBites::TL_NONE, "T_RoomName",  Ogre::DisplayString(L"请输入房间名称"), 200, 100);
     mTextBox->getOverlayElement()->setPosition(left, top - 50 );
-   // mTextBox->setText( Ogre::DisplayString(L"riririirirllllllll"));
+    // mTextBox->setText( Ogre::DisplayString(L"riririirirllllllll"));
     this->mWidget_vec.push_back(mTextBox);
     //mTextBox = mTrayMgr->createTextBox(OgreBites::TL_NONE, "T_RoomName", Ogre::DisplayString(L"请输入房间名称"), 200, 70);
     //mTextBox->getOverlayElement()->setPosition(left, top-20);
@@ -595,6 +643,8 @@ void DancingGuiSys::setCurrentWidgetType()
 
 void DancingGuiSys::buttonHit(Button *button)
 {
+
+
     if(button == NULL)
         return;
 
@@ -603,6 +653,31 @@ void DancingGuiSys::buttonHit(Button *button)
     functionPoint temp = this->mMap[mPair];
     (this->*temp)();
 
+}
+
+int print_result_cb(void *data, int n_columns, char **column_values, char **column_names)
+{
+    static int column_names_printed = 0;
+    if (!column_names_printed)
+    {
+        print_row(n_columns, column_names);
+        column_names_printed = 1;
+    }
+    print_row(n_columns, column_values);
+    return 0;
+}
+void print_row(int n_values, char **values)
+{
+    int i;
+    for (i = 0; i < n_values; ++i)
+    {
+        if (i > 0)
+        {
+            printf("\t");
+        }
+        printf("%s", values[i]);
+    }
+    printf("\n");
 }
 void DancingGuiSys::itemSelected(SelectMenu *menu)
 {
@@ -807,3 +882,5 @@ bool DancingGuiSys::keyReleased( const OIS::KeyEvent &arg )
 {
     return true;
 }
+
+
