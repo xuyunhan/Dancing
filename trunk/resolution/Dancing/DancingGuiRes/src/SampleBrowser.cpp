@@ -37,12 +37,15 @@
 #endif
 
 #include "SampleBrowser.h"
+#include "ClientConnect.h"
+#include "DancingGuiSys.h"
+
 using namespace OgreBites;
 void SampleContext::setupWidgets()
 {
 
     mTrayMgr->destroyAllWidgets();
-	
+
 }
 
 
@@ -55,6 +58,7 @@ void SampleContext::setupWidgets()
 #elif OGRE_PLATFORM == OGRE_PLATFORM_IPHONE
 #include "SampleBrowser_iOS.h"
 #endif
+
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 INT WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, INT)
@@ -118,6 +122,19 @@ int main(int argc, char *argv[])
     try
     {
         SampleContext sb;
+
+
+        ConnectManager::GetInstance();
+        ConnectManager::GetInstance()->ConfigClient();
+        ConnectManager::GetInstance()->StartUpClient();
+
+        /*while (1)
+        {
+            Sleep(30);
+            //send倒可以不用
+            ConnectManager::GetInstance()->Send();
+            ConnectManager::GetInstance()->Receive();
+        }*/
         sb.go();
     }
     catch (Ogre::Exception &e)

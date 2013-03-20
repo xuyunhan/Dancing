@@ -14,6 +14,8 @@ public:
 
     bool readHousesFile();
     bool inputHousesFile();
+
+	void clearConfigFile();
 };
 
 #endif

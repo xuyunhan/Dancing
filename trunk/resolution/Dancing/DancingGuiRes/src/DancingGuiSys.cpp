@@ -1,5 +1,7 @@
 #include "DancingGuiSys.h"
-
+#include "ClientConnect.h"
+#include "Ogre.h"
+#include "OgrePlugin.h"
 int print_result_cb(void *data, int n_columns, char **column_values, char **column_names);
 void print_row(int n_values, char **values);
 DancingGuiSys::DancingGuiSys(void)
@@ -11,25 +13,30 @@ DancingGuiSys::~DancingGuiSys(void)
 }
 
 //这里传了两个参数，第二个参数是为了控制游戏退出
-DancingGuiSys::DancingGuiSys(OgreBites::SdkTrayManager *sdktraymanager, Ogre::Root *mRoot)
+DancingGuiSys::DancingGuiSys(OgreBites::SdkTrayManager *sdktraymanager, Ogre::Root *temproot, Ogre::RenderWindow *tempindow)
 {
 
     mParseXml = new ParseXml();
+    mParseXml->clearConfigFile();
+
     // mParseXml->inputRolesFile();
     //mParseXml->readRolesFile();
 
 
     this->mTrayMgr = sdktraymanager;
-    this->mRoot = mRoot;
+    this->mRoot = temproot;
+    this->mWindow = tempindow;
     //默认单人模式
     m_gameStyle = 1;
     //默认状态
     mCurrentWidgetType = BaseState;
+    mWillHouse = "";
     this->ConfigGuiInfo();
 
 }
 void DancingGuiSys::setWidgetGameStart()
 {
+
     this->mCurrentWidgetType = GameStart;
     //删除以往界面中的控件
     vector<OgreBites::Widget *>::iterator tempIte = this->mWidget_vec.begin();
@@ -107,210 +114,7 @@ void DancingGuiSys::setWidgetBaseState()
     aboutUs->getOverlayElement()->setPosition(450, 470);
     this->mWidget_vec.push_back(aboutUs);
 }
-void DancingGuiSys::setWidgetCreateRole()
-{
-    //设置当前状态
-    this->mCurrentWidgetType = CreateRole;
 
-    //删除以往界面中的控件
-    vector<OgreBites::Widget *>::iterator tempIte = this->mWidget_vec.begin();
-    for (; tempIte != this->mWidget_vec.end(); ++tempIte)
-    {
-        this->mTrayMgr->destroyWidget(*tempIte);
-    }
-    //清空界面控件列表
-    mWidget_vec.clear();
-
-    //控制位置的变量
-    Ogre::Real left = 200;
-    Ogre::Real top = 100;
-
-    //局域网/单机模式的选择
-    singleBox = mTrayMgr->createCheckBox(OgreBites::TL_NONE, "Box_Single", Ogre::DisplayString(L"单机模式"));
-    singleBox->getOverlayElement()->setDimensions(100, 30);
-    singleBox->getOverlayElement()->setPosition(850, 10);
-    this->mWidget_vec.push_back(singleBox);
-    if(this->m_gameStyle == 1)
-        singleBox->setChecked(true, false);
-
-    multiBox = mTrayMgr->createCheckBox(OgreBites::TL_NONE, "Box_Multi", Ogre::DisplayString(L"局域网模式"));
-    multiBox->getOverlayElement()->setDimensions(100, 30);
-    multiBox->getOverlayElement()->setPosition(850, 50);
-    this->mWidget_vec.push_back(multiBox);
-    if(this->m_gameStyle == 2)
-        multiBox->setChecked(true, false);
-
-    //昵称标签
-    OgreBites::Label *lname = mTrayMgr->createLabel(OgreBites::TL_NONE, "L_Name", Ogre::DisplayString(L"昵称"), 50);
-    lname->getOverlayElement()->setPosition(left, top - 50 );
-    this->mWidget_vec.push_back(lname);
-    left += 50; //250,90
-
-    //输入昵称文本框
-    //这里的文本框没有实现输入
-    /*OgreBites::TextBox *tname = mTrayMgr->createTextBox(OgreBites::TL_NONE, "T_Name", Ogre::DisplayString(L"请输入"), 180, 70);
-    tname->getOverlayElement()->setPosition(left, top - 20);
-    tname->setText(Ogre::DisplayString(L"请输入你的昵称"));
-    this->mWidget_vec.push_back(tname);
-
-    mTextBox =  mTrayMgr->createTextBox(OgreBites::TL_NONE, "T_Name", Ogre::DisplayString(L"请输入"), 180, 150);
-    mTextBox->getOverlayElement()->setPosition(left, top - 100);
-    mTextBox->setText(Ogre::DisplayString(L"请输入你的昵称"));
-    this->mWidget_vec.push_back(mTextBox);
-    left -= 50;
-    top  += 60;//200,150*/
-    mTextBox = mTrayMgr->createTextBox(OgreBites::TL_NONE, "T_Name",  Ogre::DisplayString(L"请输入"), 180, 100);
-    mTextBox->getOverlayElement()->setPosition(left, top - 50 );
-    mTextBox->setText( Ogre::DisplayString(L"riririirirllllllll"));
-    this->mWidget_vec.push_back(mTextBox);
-    left -= 50;
-    top  += 60;
-
-
-    //性别标签
-    OgreBites::Label *lsex = mTrayMgr->createLabel(OgreBites::TL_NONE, "L_Sex", Ogre::DisplayString(L"性别"), 50);
-    lsex->getOverlayElement()->setPosition(left, top);
-    this->mWidget_vec.push_back(lsex);
-    left += 50;//250,150
-
-    //性别checkbox
-    maleBox = mTrayMgr->createCheckBox(OgreBites::TL_NONE, "C_SexM", Ogre::DisplayString(L"男"), 60);
-    maleBox->getOverlayElement()->setPosition(left, top);
-    maleBox->setChecked(true, false);
-    this->mWidget_vec.push_back(maleBox);
-    left += 120;//370,150
-
-    femaleBox = mTrayMgr->createCheckBox(OgreBites::TL_NONE, "C_SexF", Ogre::DisplayString(L"女"), 60);
-    femaleBox->getOverlayElement()->setPosition(left, top);
-    this->mWidget_vec.push_back(femaleBox);
-    left -= 170;
-    top += 60;//200,210
-
-    //发型标签
-    OgreBites::Label *lhair = mTrayMgr->createLabel(OgreBites::TL_NONE, "L_Hair", Ogre::DisplayString(L"发型"), 50);
-    lhair->getOverlayElement()->setPosition(left, top);
-    this->mWidget_vec.push_back(lhair);
-    left += 50;//250,210
-
-    //发型下拉框
-    Ogre::StringVector  hairstyle;
-    hairstyle.push_back(Ogre::DisplayString(L"短发"));
-    hairstyle.push_back(Ogre::DisplayString(L"中分"));
-    OgreBites::SelectMenu *shair = mTrayMgr->createThickSelectMenu(OgreBites::TL_NONE, "S_Hair", Ogre::DisplayString(L"请选择"), 180, 10, hairstyle);
-    shair->getOverlayElement()->setHeight(50);
-    //shair->(0);
-    shair->getOverlayElement()->setPosition(left, top);
-    this->mWidget_vec.push_back(shair);
-    left -= 50;
-    top += 60;//200,270
-
-    //配饰
-    OgreBites::Label *lrings = mTrayMgr->createLabel(OgreBites::TL_NONE, "L_Rings", Ogre::DisplayString(L"配饰"), 50);
-    lrings->getOverlayElement()->setPosition(left, top);
-    left += 50;//250,270
-    this->mWidget_vec.push_back(lrings);
-
-    //配饰下拉框
-    Ogre::StringVector  ringstyle;
-    ringstyle.push_back(Ogre::DisplayString(L"耳环"));
-    ringstyle.push_back(Ogre::DisplayString(L"耳钉"));
-    OgreBites::SelectMenu *srings = mTrayMgr->createThickSelectMenu(OgreBites::TL_NONE, "S_Rings", Ogre::DisplayString(L"请选择"), 180, 10, ringstyle);
-    srings->getOverlayElement()->setHeight(50);
-    srings->getOverlayElement()->setPosition(left, top);
-    this->mWidget_vec.push_back(srings);
-    left -= 50;
-    top += 60;//200,330
-
-    //上装
-    OgreBites::Label *lshangzhuang = mTrayMgr->createLabel(OgreBites::TL_NONE, "L_Shangzhuang", Ogre::DisplayString(L"上装"), 50);
-    lshangzhuang->getOverlayElement()->setPosition(left, top);
-    this->mWidget_vec.push_back(lshangzhuang);
-    left += 50;//250,330
-
-    //上装
-    Ogre::StringVector  shangstyle;
-    shangstyle.push_back(Ogre::DisplayString(L"衬衫"));
-    shangstyle.push_back(Ogre::DisplayString(L"T恤"));
-    OgreBites::SelectMenu *shangzhuang = mTrayMgr->createThickSelectMenu(OgreBites::TL_NONE, "S_Shangzhuang", Ogre::DisplayString(L"请选择"), 180, 10, shangstyle);
-    shangzhuang->getOverlayElement()->setHeight(50);
-    shangzhuang->getOverlayElement()->setPosition(left, top);
-    this->mWidget_vec.push_back(shangzhuang);
-    left -= 50;
-    top += 60;//200,390
-
-    //从下面开始，下拉列表不能再显示中文了，我尝试在上装选项中多加几项，加多了显示中文的项也会报错，是不是内存不够？
-    //下装
-    OgreBites::Label *lxiazhuang = mTrayMgr->createLabel(OgreBites::TL_NONE, "L_Xiazhuang", Ogre::DisplayString(L"下装"), 50);
-    lxiazhuang->getOverlayElement()->setPosition(left, top);
-    this->mWidget_vec.push_back(lxiazhuang);
-    left += 50;//250,330
-
-    //下装
-    Ogre::StringVector  xiastyle;
-    xiastyle.push_back(Ogre::DisplayString(L"mini-Skirt"));
-    xiastyle.push_back(Ogre::DisplayString(L"Boshimiya-Skirt"));
-    OgreBites::SelectMenu *xiazhuang = mTrayMgr->createThickSelectMenu(OgreBites::TL_NONE, "S_Xiazhuang", Ogre::DisplayString(L"请选择"), 180, 10, xiastyle);
-    xiazhuang->getOverlayElement()->setHeight(50);
-    xiazhuang->getOverlayElement()->setPosition(left, top);
-    this->mWidget_vec.push_back(xiazhuang);
-    left -= 50;
-    top += 60;//200,390
-
-    //鞋子
-    Label *lshoes = mTrayMgr->createLabel(OgreBites::TL_NONE, "L_Shoes", Ogre::DisplayString(L"鞋子"), 50);
-    lshoes->getOverlayElement()->setPosition(left, top);
-    left += 50;//250,450
-    this->mWidget_vec.push_back(lshoes);
-
-    Ogre::StringVector  shoestyle;
-    shoestyle.push_back(Ogre::DisplayString(L"song"));
-    shoestyle.push_back(Ogre::DisplayString(L"gao"));
-    OgreBites::SelectMenu *sshoes = mTrayMgr->createThickSelectMenu(OgreBites::TL_NONE, "S_Shoes", Ogre::DisplayString(L"请选择"), 180, 10, shoestyle);
-    sshoes->getOverlayElement()->setHeight(50);
-    sshoes->getOverlayElement()->setPosition(left, top);
-    left -= 50;
-    top += 60;//200，510
-    this->mWidget_vec.push_back(sshoes);
-
-    //显示当前形象标签
-    OgreBites::Label *showImage = mTrayMgr->createLabel(OgreBites::TL_NONE, "L_ShowImage", Ogre::DisplayString(L"当前形象"), 100);
-    showImage->getOverlayElement()->setPosition(630, 100);
-    this->mWidget_vec.push_back(showImage);
-    //显示形象空间
-    OgreBites::Label *image = mTrayMgr->createLabel(OgreBites::TL_NONE, "L_Image", "");
-    image->getOverlayElement()->setDimensions(210, 350);
-    image->getOverlayElement()->setPosition(580, 130);
-    this->mWidget_vec.push_back(image);
-    //image->getOverlayElement()->setMaterialName("");
-
-
-    //创建角色 按钮
-    OgreBites::Button *createRole_sig = mTrayMgr->createButton(OgreBites::TL_NONE, "createRole_sig", Ogre::DisplayString(L"创建角色1"), 100);
-    createRole_sig->getOverlayElement()->setDimensions(100, 50);
-    createRole_sig->getOverlayElement()->setPosition(350, 570);
-    this->mWidget_vec.push_back(createRole_sig);
-
-    OgreBites::Button *createRole_mut = mTrayMgr->createButton(OgreBites::TL_NONE, "createRole_mut", Ogre::DisplayString(L"创建角色2"), 100);
-    createRole_mut->getOverlayElement()->setDimensions(100, 50);
-    createRole_mut->getOverlayElement()->setPosition(350, 570);
-    this->mWidget_vec.push_back(createRole_mut);
-    createRole_mut->hide();
-
-    //直接开始游戏按钮
-    OgreBites::Button *startGame = mTrayMgr->createButton(OgreBites::TL_NONE, "StartGame_role", Ogre::DisplayString(L"开始游戏"), 100);
-    startGame->getOverlayElement()->setDimensions(100, 50);
-    startGame->getOverlayElement()->setPosition(470, 570);
-    this->mWidget_vec.push_back(startGame);
-
-    //startGame->getOverlayElement()->setp
-    //退出按钮
-    OgreBites::Button *quitGame = mTrayMgr->createButton(OgreBites::TL_NONE, "QuitGame_role", Ogre::DisplayString(L"退出"), 100);
-    quitGame->getOverlayElement()->setDimensions(100, 50);
-    quitGame->getOverlayElement()->setPosition(590, 570);
-    this->mWidget_vec.push_back(quitGame);
-
-    //其他控件
-}//startgame createhouse createrole gameset housed
 void DancingGuiSys::setWidgetGameSet()
 {
     this->mCurrentWidgetType = GameSet;
@@ -404,8 +208,28 @@ void DancingGuiSys::setWidgetGameSet()
 
 
 }
+void DancingGuiSys::nothing()
+{
+    //向服务器请求房间列表
+
+    TiXmlDocument  myDocument ;
+
+    TiXmlElement *RootElement = new TiXmlElement("houses");
+    myDocument.LinkEndChild(RootElement);
+    myDocument.SaveFile("houses.xml");
+
+    //Sleep(3000);
+
+    ConnectManager::GetInstance()->Send("houselist");
+
+
+}
 void DancingGuiSys::setWidgetCreateHouse()
 {
+
+    mWillHouse = "";//已选界面为空
+    mWillHouseLabelName = "";
+
 
     this->mCurrentWidgetType = CreateHouse;
 
@@ -460,10 +284,10 @@ void DancingGuiSys::setWidgetCreateHouse()
     * 电子邮箱：10809148@qq.com
     * 日    期：2013年3月14日
     *******************************************************************/
-    TiXmlDocument *myDocument = new TiXmlDocument("houses.xml");
-    myDocument->LoadFile();
+    TiXmlDocument myDocument ;//= new TiXmlDocument();
+    myDocument.LoadFile("houses.xml");
     //获得根元素，即Persons。
-    TiXmlElement *RootElement = myDocument->RootElement();//roles
+    TiXmlElement *RootElement = myDocument.RootElement();//roles
 
     TiXmlElement *Person = RootElement->FirstChildElement();
 
@@ -486,9 +310,10 @@ void DancingGuiSys::setWidgetCreateHouse()
         mLabel_vec[i]->getOverlayElement()->setPosition(90, pTop);
         pTop += 30;
         this->mWidget_vec.push_back(mLabel_vec[i]);
-
-
     }
+
+
+
 
 
 
@@ -628,6 +453,13 @@ void DancingGuiSys::setWidgetCreateHouse()
     quitGame->getOverlayElement()->setPosition(610, 620);
     this->mWidget_vec.push_back(quitGame);
 
+    //fux add
+    OgreBites::Button *creatHouse = mTrayMgr->createButton(OgreBites::TL_NONE, "CreateHouse", Ogre::DisplayString(L"创建房间"), 100);
+    creatHouse->getOverlayElement()->setDimensions(100, 50);
+    creatHouse->getOverlayElement()->setPosition(730, 620);
+    this->mWidget_vec.push_back(creatHouse);
+
+
 }//startgame createhouse createrole gameset housed
 
 
@@ -647,11 +479,153 @@ void DancingGuiSys::buttonHit(Button *button)
 
     if(button == NULL)
         return;
+    /*******************************************************************
+    * 功    能：单机版开始游戏点击创建房间按钮，则要保存一些信息
+    *******************************************************************/
+    /*******************************************************************
+    * 功    能：点击创建房间按钮，则要保存一些信息,并联系服务端，newhouse.xml  myhouse.xml
+    *******************************************************************/
+    if(button->getName() == "CreateHouse"  || button->getName() == "StartGame_GameSet") //创建新房间的信息
+    {
+        //创建一个XML的文档对象。
+        TiXmlDocument myDocument ;//= new TiXmlDocument();
+        //创建一个根元素并连接。
+        TiXmlElement *RootElement = new TiXmlElement("houses");
+        myDocument.LinkEndChild(RootElement);
+        //创建一个Person元素并连接。
+        TiXmlElement *PersonElement = new TiXmlElement("house");
+        RootElement->LinkEndChild(PersonElement);
+        //设置Person元素的属性。
+
+        /*TextBox T_RoomName
+        SelectMenu S_DanceStyle
+        SelectMenu S_DanceSong
+        SelectMenu S_DanceScence*/
+        TextBox *tempTextBox ;
+        if(button->getName() == "CreateHouse")
+        {
+            tempTextBox = (TextBox *) this->mTrayMgr->getWidget("T_RoomName");
+        }
+        SelectMenu *tempSelectMenu1 = (SelectMenu *) this->mTrayMgr->getWidget("S_DanceStyle");
+        SelectMenu *tempSelectMenu2 = (SelectMenu *) this->mTrayMgr->getWidget("S_DanceSong");
+        SelectMenu *tempSelectMenu3 = (SelectMenu *) this->mTrayMgr->getWidget("S_DanceScence");
+
+        string temp1;
+        if(button->getName() == "CreateHouse")
+        {
+            temp1 = tempTextBox->getText();
+        }
+        else
+        {
+            temp1 = "DefaultScene";
+        }
+        string temp2 = tempSelectMenu1->getSelectedItem();
+        string temp3 = tempSelectMenu2->getSelectedItem();
+        string temp4 = tempSelectMenu3->getSelectedItem();
+
+
+        PersonElement->SetAttribute("name", temp1.c_str());
+        PersonElement->SetAttribute("dancestyle", temp2.c_str());
+        PersonElement->SetAttribute("dancemusic", temp3.c_str());
+        PersonElement->SetAttribute("dancescene", temp4.c_str());
+
+
+        myDocument.SaveFile("myhouse.xml");
+
+
+        if(button->getName() == "CreateHouse")
+        {
+            myDocument.SaveFile("newhouse.xml");//保存到文件
+            ConnectManager::GetInstance()->Send("newhouse");
+        }
+
+    }
+    /*******************************************************************
+    * 功    能：保存本机角色信息，无论是单机模式还是其他模式，旨在保存role.xml，无需发送至服务器
+    *******************************************************************/
+    if(button->getName() == "StartGame_role" || button->getName() == "createRole_mut" || button->getName() == "createRole_sig")
+    {
+        //创建一个XML的文档对象。
+        TiXmlDocument myDocument;// = new TiXmlDocument();
+        //创建一个根元素并连接。
+        TiXmlElement *RootElement = new TiXmlElement("roles");
+        myDocument.LinkEndChild(RootElement);
+        //创建一个Person元素并连接。
+        TiXmlElement *PersonElement = new TiXmlElement("role");
+        RootElement->LinkEndChild(PersonElement);
+
+        /*TextBox T_Name
+        checkbox C_SexM C_SexF
+        SelectMenu S_Hair
+        SelectMenu S_Rings
+        SelectMenu S_Shangzhuang
+        SelectMenu S_Xiazhuang
+        SelectMenu S_Shoes*/
+
+        TextBox *tempTextBox = (TextBox *) this->mTrayMgr->getWidget("T_Name");
+        CheckBox *tempCheckBox = (CheckBox *)this->mTrayMgr->getWidget("C_SexM");
+        SelectMenu *tempSelectMenu1 = (SelectMenu *) this->mTrayMgr->getWidget("S_Hair");
+        SelectMenu *tempSelectMenu2 = (SelectMenu *) this->mTrayMgr->getWidget("S_Rings");
+        SelectMenu *tempSelectMenu3 = (SelectMenu *) this->mTrayMgr->getWidget("S_Shangzhuang");
+        SelectMenu *tempSelectMenu4 = (SelectMenu *) this->mTrayMgr->getWidget("S_Xiazhuang");
+        SelectMenu *tempSelectMenu5 = (SelectMenu *) this->mTrayMgr->getWidget("S_Shoes");
+
+        string temp1 = tempTextBox->getText();
+        bool temp2 = tempCheckBox->isChecked();
+        string temp3 = tempSelectMenu1->getSelectedItem();
+        string temp4 = tempSelectMenu2->getSelectedItem();
+        string temp5 = tempSelectMenu3->getSelectedItem();
+        string temp6 = tempSelectMenu4->getSelectedItem();
+        string temp7 = tempSelectMenu5->getSelectedItem();
+
+
+        PersonElement->SetAttribute("name", temp1.c_str());
+        PersonElement->SetAttribute("sex", temp2);
+        PersonElement->SetAttribute("hire", temp3.c_str());
+        PersonElement->SetAttribute("decorate", temp4.c_str());
+        PersonElement->SetAttribute("upware", temp5.c_str());
+        PersonElement->SetAttribute("downware", temp6.c_str());
+        PersonElement->SetAttribute("shoe", temp7.c_str());
+
+        myDocument.SaveFile("myrole.xml");//保存到文件
+    }
+    /*******************************************************************
+    * 功    能：退出用户信息GameStart->SetGame局域的 = nothing();   SelectHouse-》局域
+    *******************************************************************/
+    if(button->getName() == "SetGame" || button->getName() == "SelectHouse")
+    {
+        TiXmlDocument myDocument ;
+        //myDocument.SaveFile("myhouse.xml");
+
+        if(button->getName() == "SetGame")
+        {
+            myDocument.SaveFile("otherrole.xml");
+            myDocument.SaveFile("newhouse.xml");
+            ConnectManager::GetInstance()->Send("logoff");
+        }
+
+    }
+    /*******************************************************************
+    * 功    能：加入游戏  CreateHouse->StartGame_CreateHouse
+    *******************************************************************/
+    if(button->getName() == "StartGame_CreateHouse")
+    {
+        if(this->mWillHouse != "")
+        {
+            ConnectManager::GetInstance()->Send("login", this->mWillHouse);
+        }
+        else
+        {
+            //fux add没有选择房间的提示信息
+        }
+    }
+
 
     mPair.first = this->mCurrentWidgetType;
     mPair.second = button->getName();
     functionPoint temp = this->mMap[mPair];
     (this->*temp)();
+
 
 }
 
@@ -681,9 +655,54 @@ void print_row(int n_values, char **values)
 }
 void DancingGuiSys::itemSelected(SelectMenu *menu)
 {
+    /*S_Hair
+    S_Rings
+    S_Shangzhuang
+    S_Xiazhuang
+    S_Shoes*/
+    if (menu->getName() == "S_Hair"  ||
+            menu->getName() == "S_Rings" ||
+            menu->getName() == "S_Shangzhuang" ||
+            menu->getName() == "S_Xiazhuang" ||
+            menu->getName() == "S_Shoes" )
+    {
+        this->changgeScene(menu->getName() );
+    }
 }
 void DancingGuiSys::labelHit(Label *label)
 {
+    string tempstring = label->getName();
+    const char *tempchar = tempstring.c_str();
+    if(tempchar[5]  == '_')
+    {
+        //还原上一个被点击的东东
+        Label *tempLable = (Label *) this->mTrayMgr->getWidget(mWillHouseLabelName);
+        if(tempLable)
+        {
+            Ogre::Real top = tempLable->getOverlayElement()->getTop();
+            Ogre::Real left = tempLable->getOverlayElement()->getLeft();
+            tempLable->getOverlayElement()->setPosition(left + 20, top);
+        }
+        Ogre::Real top = label->getOverlayElement()->getTop();
+        Ogre::Real left = label->getOverlayElement()->getLeft();
+        label->getOverlayElement()->setPosition(left - 20, top);
+        this->mWillHouseLabelName = label->getName();
+
+        //获取房间名
+        {
+            string tempstring = label->getCaption();
+            const char *tempchar = tempstring.c_str();
+            tempstring = "";
+            for(int i = 2; tempchar[i] != ' '; ++i)
+            {
+                tempstring += tempchar[i];
+            }
+            this->mWillHouse = tempstring;
+        }
+
+    }
+    //SelectMenu *tempSelectMenu1 = (SelectMenu *) this->mTrayMgr->getWidget("S_DanceStyle");
+    //house_
 }
 void DancingGuiSys::sliderMoved(Slider *slider)
 {
@@ -720,10 +739,15 @@ void DancingGuiSys::checkBoxToggled(CheckBox *box)
     }
     else if(boxName == Ogre::String("C_SexM"))
     {
+
+
+
         //待处理
         //处理显示男生形象，函数尚未添加
         if(box->isChecked())
             this->femaleBox->setChecked(false, false);
+
+        this->changgeScene(box->getName() );
     }
     else if(boxName == Ogre::String("C_SexF"))
     {
@@ -731,6 +755,7 @@ void DancingGuiSys::checkBoxToggled(CheckBox *box)
         //处理显示女生形象，函数尚未添加
         if(box->isChecked())
             this->maleBox->setChecked(false, false);
+        this->changgeScene(box->getName() );
     }
 
 }
@@ -764,7 +789,8 @@ void DancingGuiSys::ConfigGuiInfo()
     // QuitGame_role   GameOver
     mPair.first =  CreateRole;
     mPair.second = "createRole_sig";
-    this->mMap[mPair]  = &DancingGuiSys::setWidgetCreateHouse;
+    //this->mMap[mPair]  = &DancingGuiSys::setWidgetCreateHouse;
+    this->mMap[mPair]  = &DancingGuiSys::nothing;
     mPair.first =  CreateRole;
     mPair.second = "createRole_mut";
     this->mMap[mPair]  = &DancingGuiSys::setWidgetGameSet;
@@ -802,6 +828,9 @@ void DancingGuiSys::ConfigGuiInfo()
     mPair.second = "StartGame_CreateHouse";
     this->mMap[mPair]  = &DancingGuiSys::setWidgetGameStart;
     mPair.first =  CreateHouse;
+    mPair.second = "CreateHouse";
+    this->mMap[mPair]  = &DancingGuiSys::setWidgetGameStart;
+    mPair.first =  CreateHouse;
     mPair.second = "QuitGame_CreateHouse";
     this->mMap[mPair]  = &DancingGuiSys::setWidgetGameOver;
 
@@ -814,10 +843,11 @@ void DancingGuiSys::ConfigGuiInfo()
     this->mMap[mPair]  = &DancingGuiSys::setWidgetGameOver;
     mPair.first =  GameStart;
     mPair.second = "SetGame";
-    this->mMap[mPair]  = &DancingGuiSys::setWidgetGameSet;
+    //this->mMap[mPair]  = &DancingGuiSys::setWidgetCreateHouse;
+    this->mMap[mPair]  = &DancingGuiSys::nothing;
     mPair.first =  GameStart;
     mPair.second = "SelectHouse";
-    this->mMap[mPair]  = &DancingGuiSys::setWidgetCreateHouse;
+    this->mMap[mPair]  = &DancingGuiSys::setWidgetGameSet;
 
     //GameOver,
 
