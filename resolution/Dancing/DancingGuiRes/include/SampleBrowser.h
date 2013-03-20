@@ -2,7 +2,7 @@
 #define __SampleBrowser_H__
 
 #include "SampleContext.h"
-
+#include "ClientConnect.h"
 using namespace OgreBites;
 void SampleContext::shutdown()
 {
@@ -64,19 +64,33 @@ void SampleContext::go(Sample *initialSample)
                                 mFSLayer->getWritablePath("ogre.log"));
     //endcreateroot
 
+    if(mRoot->showConfigDialog())
+    {
+        // If returned true, user clicked OK so initialise
+        // Here we choose to let the system create a default rendering window by passing 'true'
+        // mWindow = mRoot->initialise(true, "DancingMain Render Window");
+        mWindow = mRoot->initialise(true, "不如跳舞");
+        // Let's add a nice window icon
+        //   HWND hwnd;
+        // mWindow->getCustomAttribute("WINDOW", (void *)&hwnd);
+        // LONG iconID   = (LONG)LoadIcon( GetModuleHandle(0), MAKEINTRESOURCE(IDI_APPICON) );
+        // SetClassLong( hwnd, GCL_HICON, iconID );
+        // return true;
+    }
+
     //	return mRoot->showConfigDialog();
-    mRoot->restoreConfig();
+    //mRoot->restoreConfig();
 
     //setup();
     //createWindow();
-    mWindow = mRoot->initialise(true, "不如跳舞");
+    //ff  mWindow = mRoot->initialise(true, "不如跳舞");
     //endcreateWindow
 
 
     /*******************************************************************
     *******************************************************************/
     //scenemgr//
-    mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
+    mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC, "dancingscenemgr");
     //-------------------------------------------------------------------------------------
     // create camera
     // Create the camera
@@ -185,7 +199,9 @@ void SampleContext::go(Sample *initialSample)
 
     setupWidgets();
 
-    mDancingGuiSys = new DancingGuiSys(mTrayMgr, mRoot);
+    mDancingGuiSys = new DancingGuiSys(mTrayMgr, mRoot, mWindow);
+
+    ConnectManager::GetInstance()->mDancingGuiSys = mDancingGuiSys;
     mDancingGuiSys->setWidgetBaseState();
     //mDancingGuiSys->setWidgetGameSet();
 
@@ -203,7 +219,9 @@ void SampleContext::createScene()
 {
     /*******************************************************************
     *******************************************************************/
-    // Create the scene
+
+
+    // Create the scene 
     Ogre::Entity *ogreHead = mSceneMgr->createEntity("Head", "ogrehead.mesh");
 
     Ogre::SceneNode *headNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();

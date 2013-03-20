@@ -68,7 +68,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OgreMain_d.lib OIS_d.lib  tinyxml.lib"
+				AdditionalDependencies="OgreMain_d.lib OIS_d.lib  tinyxml.lib RakNetLibStaticDebug.lib  ws2_32.lib "
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OGRE_HOME)\lib\debug;$(OGRE_HOME)\boost_1_44\lib"
@@ -200,7 +200,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\src\ClientConnect.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\DancingGuiSys.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\DancingHouse.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\DancingRole.cpp"
 				>
 			</File>
 			<File
@@ -216,6 +228,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\RoleSetting.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\SampleBrowser.cpp"
 				>
 			</File>
@@ -226,7 +242,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\include\ClientConnect.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\DancingGuiSys.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\DancingHouse.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\DancingRole.h"
 				>
 			</File>
 			<File

@@ -1,4 +1,5 @@
 #include "SampleContext.h"
+#include "ClientConnect.h"
 using namespace OgreBites;
 /*-----------------------------------------------------------------------------
 | Extends frameRenderingQueued to update tray manager and carousel.
@@ -7,6 +8,7 @@ bool SampleContext::frameRenderingQueued(const Ogre::FrameEvent &evt)
 {
     // don't do all these calculations when sample's running or when in configuration screen or when no samples loaded
 
+    ConnectManager::GetInstance()->Receive();
 
     mTrayMgr->frameRenderingQueued(evt);
 

@@ -52,7 +52,7 @@ public:
     * 电子邮箱：10809148@qq.com
     * 日    期：2013年3月7日
     *******************************************************************/
-    DancingGuiSys(OgreBites::SdkTrayManager *sdktraymanager, Ogre::Root *mRoot);
+    DancingGuiSys(OgreBites::SdkTrayManager *sdktraymanager, Ogre::Root *mRoot, Ogre::RenderWindow *mWindow);
     ~DancingGuiSys(void);
     /*******************************************************************
     * 函数名称：setWidget***
@@ -72,6 +72,9 @@ public:
     void setWidgetGameOver();
     void setWidgetAboutMe();
 
+    void nothing();
+
+
 
     /*******************************************************************
     * 函数名称：
@@ -89,6 +92,8 @@ public:
     void checkBoxToggled(CheckBox *box) ;
     void okDialogClosed(const Ogre::DisplayString &message) ;
     void yesNoDialogClosed(const Ogre::DisplayString &question, bool yesHit) ;
+
+    void changgeScene(string);
 
 
     /*******************************************************************
@@ -141,6 +146,7 @@ private:
     OgreBites::SdkTrayManager *mTrayMgr;
 
     Ogre::Root *mRoot;
+    Ogre::RenderWindow *mWindow;    // render window
 
     //根据（界面、按钮）对决定响应函数的关联
     std::pair<WidgetType, string> mPair;
@@ -169,6 +175,10 @@ private:
 
     //xml
     ParseXml *mParseXml;
+
+    //
+    string mWillHouseLabelName;
+    string mWillHouse;
 
 
 
