@@ -1,6 +1,12 @@
 #include "SampleContext.h"
 #include "ClientConnect.h"
 using namespace OgreBites;
+
+/*******************************************************************
+* 说    明：将SampleContext的各种监听回调函数实现于此文件
+* 作    者： grius
+* 日    期：2013年3月22日
+*******************************************************************/
 /*-----------------------------------------------------------------------------
 | Extends frameRenderingQueued to update tray manager and carousel.
 -----------------------------------------------------------------------------*/
@@ -14,60 +20,14 @@ bool SampleContext::frameRenderingQueued(const Ogre::FrameEvent &evt)
 
     return true;
 }
-/*-----------------------------------------------------------------------------
-| Handles confirmation dialog responses.
------------------------------------------------------------------------------*/
-void SampleContext::yesNoDialogClosed(const Ogre::DisplayString &question, bool yesHit)
-{
-    this->mDancingGuiSys->yesNoDialogClosed(question, yesHit);
 
-}
-
-/*-----------------------------------------------------------------------------
-| Handles button widget events.
------------------------------------------------------------------------------*/
-void SampleContext::buttonHit(Button *b)
-{
-    this->mDancingGuiSys->buttonHit(b);
-
-}
-
-/*-----------------------------------------------------------------------------
-| Handles menu item selection changes.
------------------------------------------------------------------------------*/
-void SampleContext::itemSelected(SelectMenu *menu)
-{
-    this->mDancingGuiSys->itemSelected(menu);
-
-}
-
-/*-----------------------------------------------------------------------------
-| Handles sample slider changes.
------------------------------------------------------------------------------*/
-void SampleContext::sliderMoved(Slider *slider)
-{
-    this->mDancingGuiSys->sliderMoved(slider);
-
-}
-void SampleContext::labelHit(Label *label)
-{
-    this->mDancingGuiSys->labelHit(label);
-}
-void SampleContext::checkBoxToggled(CheckBox *box)
-{
-    this->mDancingGuiSys->checkBoxToggled(box);
-}
-void SampleContext::okDialogClosed(const Ogre::DisplayString &message)
-{
-    this->mDancingGuiSys->okDialogClosed(message);
-}
 
 /*-----------------------------------------------------------------------------
 | Handles keypresses.
 -----------------------------------------------------------------------------*/
 bool SampleContext::keyPressed(const OIS::KeyEvent &evt)
 {
-    this->mDancingGuiSys->keyPressed(evt);
+    DancingGuiSys::GetInstance()->keyPressed(evt);
     if (mTrayMgr->isDialogVisible()) return true;  // ignore keypresses when dialog is showing
     return true;
 }
@@ -79,7 +39,7 @@ bool SampleContext::keyPressed(const OIS::KeyEvent &evt)
 bool SampleContext::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 
 {
-    this->mDancingGuiSys->mousePressed(evt, id);
+
 
     OIS::MouseState state = evt.state;
     OIS::MouseEvent orientedEvt((OIS::Object *)evt.device, state);
@@ -93,7 +53,7 @@ bool SampleContext::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID 
 
 bool SampleContext::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
-    this->mDancingGuiSys->mouseReleased(evt, id);
+
 
     OIS::MouseState state = evt.state;
     OIS::MouseEvent orientedEvt((OIS::Object *)evt.device, state);
@@ -108,7 +68,7 @@ bool SampleContext::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID
 bool SampleContext::mouseMoved(const OIS::MouseEvent &evt)
 
 {
-    this->mDancingGuiSys->mouseMoved(evt);
+
 
     OIS::MouseState state = evt.state;
 
@@ -130,6 +90,9 @@ bool SampleContext::mouseMoved(const OIS::MouseEvent &evt)
 -----------------------------------------------------------------------------*/
 void SampleContext::windowResized(Ogre::RenderWindow *rw)
 {
+
+    DancingGuiSys::GetInstance()->setVerticalCenter(rw->getHeight() / 2);
+    DancingGuiSys::GetInstance()->setHorizontalCenter(rw->getWidth() / 2);
     if (!mTrayMgr) return;
 
     Ogre::OverlayContainer *center = mTrayMgr->getTrayContainer(TL_CENTER);
@@ -214,7 +177,7 @@ void SampleContext::windowFocusChange(Ogre::RenderWindow *rw)
 
 bool SampleContext::keyReleased(const OIS::KeyEvent &evt)
 {
-    this->mDancingGuiSys->keyReleased(evt);
+    DancingGuiSys::GetInstance()->keyReleased(evt);
     //  if (mCurrentSample && !mSamplePaused) return mCurrentSample->keyReleased(evt);
     return true;
 }

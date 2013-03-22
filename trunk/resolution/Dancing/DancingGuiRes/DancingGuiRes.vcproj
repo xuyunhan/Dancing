@@ -220,6 +220,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\GuiLisener.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\HandleEvent.cpp"
 				>
 			</File>
@@ -262,15 +266,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\GuiLisener.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\ParseXml.h"
 				>
 			</File>
 			<File
 				RelativePath=".\res\Resource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\SampleBrowser.h"
 				>
 			</File>
 			<File
