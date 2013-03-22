@@ -1,0 +1,12 @@
+我改的地方搜xuyunhan就都出来了
+
+查找全部 "xuyunhan", 子文件夹, 查找结果 1, "整个解决方案"
+  F:\DancingSVN\resolution\Dancing\DancingGuiRes(带换装系统)\include\DancingGuiSys.h(152):    * 作    者： xuyunhan
+  F:\DancingSVN\resolution\Dancing\DancingGuiRes(带换装系统)\include\DancingGuiSys.h(163):    * 作    者： xuyunhan
+  F:\DancingSVN\resolution\Dancing\DancingGuiRes(带换装系统)\include\DancingGuiSys.h(174):    * 作    者： xuyunhan
+  F:\DancingSVN\resolution\Dancing\DancingGuiRes(带换装系统)\include\DancingGuiSys.h(231):	//xuyunhan
+  F:\DancingSVN\resolution\Dancing\DancingGuiRes(带换装系统)\include\SampleBrowser.h(237):	//xuyunhan
+  F:\DancingSVN\resolution\Dancing\DancingGuiRes(带换装系统)\src\DancingGuiSys.cpp(40)://xuyunhan
+  F:\DancingSVN\resolution\Dancing\DancingGuiRes(带换装系统)\src\RoleSetting.cpp(243):	//xuyunhan
+  F:\DancingSVN\resolution\Dancing\DancingGuiRes(带换装系统)\src\RoleSetting.cpp(249)://xuyunhan
+  匹配行: 8    匹配文件: 4    合计搜索文件: 14
