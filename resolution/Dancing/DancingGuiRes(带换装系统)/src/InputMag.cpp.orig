@@ -1,0 +1,16 @@
+#include "InputMag.h"
+InputMag::InputMag()
+{
+}
+
+InputMag::~InputMag()
+{
+}
+
+ bool InputMag::mouseMoved( const OIS::MouseEvent &arg )
+ {}
+     bool InputMag::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+
+	 {}
+     bool InputMag::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+	 {}
