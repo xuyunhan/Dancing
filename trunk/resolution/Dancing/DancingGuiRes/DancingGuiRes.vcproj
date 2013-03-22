@@ -68,7 +68,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OgreMain_d.lib OIS_d.lib  tinyxml.lib RakNetLibStaticDebug.lib  ws2_32.lib "
+				AdditionalDependencies="OgreMain_d.lib OgreTerrain_d.lib OIS_d.lib  tinyxml.lib RakNetLibStaticDebug.lib  ws2_32.lib "
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OGRE_HOME)\lib\debug;$(OGRE_HOME)\boost_1_44\lib"
@@ -200,7 +200,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\src\BasicApplication.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\ClientConnect.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Dancing.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\DancingGuiLisener.cpp"
 				>
 			</File>
 			<File
@@ -216,15 +228,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\DotSceneLoader.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\FileSystemLayerImpl_WIN32.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\GuiLisener.cpp"
+				RelativePath=".\src\HandleEvent.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\HandleEvent.cpp"
+				RelativePath=".\src\main.cpp"
 				>
 			</File>
 			<File
@@ -235,10 +251,6 @@
 				RelativePath=".\src\RoleSetting.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\src\SampleBrowser.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Í·ÎÄ¼þ"
@@ -246,7 +258,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\include\BasicApplication.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\ClientConnect.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\Dancing.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\DancingGuiLisener.h"
 				>
 			</File>
 			<File
@@ -262,23 +286,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\DotSceneLoader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\FileSystemLayerImpl.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\GuiLisener.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\ParseXml.h"
-				>
-			</File>
-			<File
-				RelativePath=".\res\Resource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\SampleContext.h"
 				>
 			</File>
 		</Filter>
@@ -293,6 +309,10 @@
 			</File>
 			<File
 				RelativePath=".\res\DancingGuiRes.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\res\Resource.h"
 				>
 			</File>
 		</Filter>

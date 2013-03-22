@@ -23,7 +23,7 @@ ConnectManager::ConnectManager(void)
     m_clientID = RakNet::UNASSIGNED_SYSTEM_ADDRESS;
 
     strcpy(m_clientPort, "0");
-    strcpy(m_ip, "192.168.1.100");
+    strcpy(m_ip, "127.0.0.1");
     strcpy(m_serverPort, "1234");
 }
 ConnectManager::~ConnectManager(void)

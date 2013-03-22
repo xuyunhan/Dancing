@@ -1,17 +1,17 @@
 #include "DancingGuiSys.h"
 #include "ClientConnect.h"
-#include "GuiLisener.h"
+#include "DancingGuiLisener.h"
 
 
-GuiLisener::GuiLisener(void)
+DancingGuiLisener::DancingGuiLisener(void)
 {
     mWillHouse = "";
 }
 
-GuiLisener::~GuiLisener(void)
+DancingGuiLisener::~DancingGuiLisener(void)
 {
 }
-void GuiLisener::buttonHit(Button *button)
+void DancingGuiLisener::buttonHit(Button *button)
 {
 
 
@@ -139,6 +139,7 @@ void GuiLisener::buttonHit(Button *button)
 
         if(button->getName() == "SetGame")
         {
+            //myhouse.xml不在此清理，但在别处清理，勿念
             myDocument.SaveFile("otherrole.xml");
             myDocument.SaveFile("newhouse.xml");
             ConnectManager::GetInstance()->Send("logoff");
@@ -168,7 +169,7 @@ void GuiLisener::buttonHit(Button *button)
 
 
 }
-void GuiLisener::itemSelected(SelectMenu *menu)
+void DancingGuiLisener::itemSelected(SelectMenu *menu)
 {
     /*S_Hair
     S_Rings
@@ -185,7 +186,7 @@ void GuiLisener::itemSelected(SelectMenu *menu)
         DancingGuiSys::GetInstance()->changgeScene(menu->getName() );
     }
 }
-void GuiLisener::labelHit(Label *label)
+void DancingGuiLisener::labelHit(Label *label)
 {
     /*******************************************************************
     * 说    明：主要处理了房间列表的选取
@@ -223,10 +224,10 @@ void GuiLisener::labelHit(Label *label)
 
     }
 }
-void GuiLisener::sliderMoved(Slider *slider)
+void DancingGuiLisener::sliderMoved(Slider *slider)
 {
 }
-void GuiLisener::checkBoxToggled(CheckBox *box)
+void DancingGuiLisener::checkBoxToggled(CheckBox *box)
 {
     /*******************************************************************
     * 说    明：处理了 男女选择  卡通实时建模选择 单机局域选择的相关信息
@@ -321,9 +322,9 @@ void GuiLisener::checkBoxToggled(CheckBox *box)
         tempCheckBox->setChecked(true, false);
     }
 }
-void GuiLisener::okDialogClosed(const Ogre::DisplayString &message)
+void DancingGuiLisener::okDialogClosed(const Ogre::DisplayString &message)
 {
 }
-void GuiLisener::yesNoDialogClosed(const Ogre::DisplayString &question, bool yesHit)
+void DancingGuiLisener::yesNoDialogClosed(const Ogre::DisplayString &question, bool yesHit)
 {
 }

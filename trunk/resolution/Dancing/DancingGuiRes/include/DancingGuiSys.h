@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 #include "ParseXml.h"
-#include "GuiLisener.h"
+#include "DancingGuiLisener.h"
 
 using namespace std;
 using namespace OgreBites;
@@ -120,8 +120,12 @@ public:
 
 
     //mCurrentWidgetType的gettere和setter
-    WidgetType getCurrentWidgetType();
-    void setCurrentWidgetType();
+    WidgetType getCurrentWidgetType()
+    {
+        return this->mCurrentWidgetType;
+    }
+    void setCurrentWidgetType() {}
+
 
     //key event callback
     bool keyPressed( const OIS::KeyEvent &arg );
@@ -136,10 +140,21 @@ public:
     {
         mHorizontalCenter = parHorizontalCenter;
     }
-    GuiLisener *getGuiLisener()
+    DancingGuiLisener *getDancingGuiLisener()
     {
-        return mGuiLisener;
+        return mDancingGuiLisener;
     }
+
+    void setCurrentTypeChanged(bool paraBool)
+    {
+        isCurrentTypeChanged = paraBool;
+    }
+    bool getCurrentTypeChanged()
+    {
+        return isCurrentTypeChanged;
+    }
+
+
 
 
 private:
@@ -150,11 +165,13 @@ private:
 
 
     //OgreSDKTray的监听器，处理buttonhit等信息皆在此
-    GuiLisener *mGuiLisener;
+    DancingGuiLisener *mDancingGuiLisener;
 
 
     //当前界面的状态，即处于哪一个界面
     WidgetType mCurrentWidgetType;
+
+    bool isCurrentTypeChanged;
 
 
     //从OGRE主程序传过来的变量

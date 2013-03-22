@@ -1,19 +1,21 @@
-#include "SampleContext.h"
+#include "BasicApplication.h"
 #include "ClientConnect.h"
 using namespace OgreBites;
 
 /*******************************************************************
-* 说    明：将SampleContext的各种监听回调函数实现于此文件
+* 说    明：将BasicApplication的各种监听回调函数实现于此文件
 * 作    者： grius
 * 日    期：2013年3月22日
 *******************************************************************/
 /*-----------------------------------------------------------------------------
 | Extends frameRenderingQueued to update tray manager and carousel.
 -----------------------------------------------------------------------------*/
-bool SampleContext::frameRenderingQueued(const Ogre::FrameEvent &evt)
+bool BasicApplication::frameRenderingQueued(const Ogre::FrameEvent &evt)
 {
     // don't do all these calculations when sample's running or when in configuration screen or when no samples loaded
 
+    mKeyboard->capture();
+    mMouse->capture();
     ConnectManager::GetInstance()->Receive();
 
     mTrayMgr->frameRenderingQueued(evt);
@@ -25,7 +27,7 @@ bool SampleContext::frameRenderingQueued(const Ogre::FrameEvent &evt)
 /*-----------------------------------------------------------------------------
 | Handles keypresses.
 -----------------------------------------------------------------------------*/
-bool SampleContext::keyPressed(const OIS::KeyEvent &evt)
+bool BasicApplication::keyPressed(const OIS::KeyEvent &evt)
 {
     DancingGuiSys::GetInstance()->keyPressed(evt);
     if (mTrayMgr->isDialogVisible()) return true;  // ignore keypresses when dialog is showing
@@ -36,7 +38,7 @@ bool SampleContext::keyPressed(const OIS::KeyEvent &evt)
 | for thumbnail clicks, just because we can.
 -----------------------------------------------------------------------------*/
 
-bool SampleContext::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
+bool BasicApplication::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 
 {
 
@@ -51,7 +53,7 @@ bool SampleContext::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID 
 }
 
 
-bool SampleContext::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
+bool BasicApplication::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
 
 
@@ -65,7 +67,7 @@ bool SampleContext::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID
 
 
 
-bool SampleContext::mouseMoved(const OIS::MouseEvent &evt)
+bool BasicApplication::mouseMoved(const OIS::MouseEvent &evt)
 
 {
 
@@ -88,7 +90,7 @@ bool SampleContext::mouseMoved(const OIS::MouseEvent &evt)
 | menu tray to the left for higher resolutions and move it to the center
 | for lower resolutions.
 -----------------------------------------------------------------------------*/
-void SampleContext::windowResized(Ogre::RenderWindow *rw)
+void BasicApplication::windowResized(Ogre::RenderWindow *rw)
 {
 
     DancingGuiSys::GetInstance()->setVerticalCenter(rw->getHeight() / 2);
@@ -113,7 +115,7 @@ void SampleContext::windowResized(Ogre::RenderWindow *rw)
         }
     }
 
-    //SampleContext::windowResized(rw);
+    //BasicApplication::windowResized(rw);
     // manually call sample callback to ensure correct order
     //  if (mCurrentSample && !mSamplePaused) mCurrentSample->windowResized(rw);
 
@@ -124,11 +126,10 @@ void SampleContext::windowResized(Ogre::RenderWindow *rw)
 #endif
     //end
 }
-bool SampleContext::frameStarted(const Ogre::FrameEvent &evt)
+bool BasicApplication::frameStarted(const Ogre::FrameEvent &evt)
 {
     //captureInputDevices();      // capture input
-    mKeyboard->capture();
-    mMouse->capture();
+
     //endcaptureInputDevices
 
     // manually call sample callback to ensure correct order(mCurrentSample && !mSamplePaused) ? mCurrentSample->frameStarted(evt) :
@@ -138,7 +139,7 @@ bool SampleContext::frameStarted(const Ogre::FrameEvent &evt)
 /*-----------------------------------------------------------------------------
 | Processes frame ended events.
 -----------------------------------------------------------------------------*/
-bool SampleContext::frameEnded(const Ogre::FrameEvent &evt)
+bool BasicApplication::frameEnded(const Ogre::FrameEvent &evt)
 {
     // manually call sample callback to ensure correct order
     // if (mCurrentSample && !mSamplePaused && !mCurrentSample->frameEnded(evt)) return false;
@@ -153,29 +154,29 @@ bool SampleContext::frameEnded(const Ogre::FrameEvent &evt)
 
 // window event callbacks which manually call their respective sample callbacks to ensure correct order
 
-void SampleContext::windowMoved(Ogre::RenderWindow *rw)
+void BasicApplication::windowMoved(Ogre::RenderWindow *rw)
 {
     // if (mCurrentSample && !mSamplePaused) mCurrentSample->windowMoved(rw);
 }
 
-bool SampleContext::windowClosing(Ogre::RenderWindow *rw)
+bool BasicApplication::windowClosing(Ogre::RenderWindow *rw)
 {
     // if (mCurrentSample && !mSamplePaused) return mCurrentSample->windowClosing(rw);
     return true;
 }
 
-void SampleContext::windowClosed(Ogre::RenderWindow *rw)
+void BasicApplication::windowClosed(Ogre::RenderWindow *rw)
 {
     //  if (mCurrentSample && !mSamplePaused) mCurrentSample->windowClosed(rw);
 }
 
-void SampleContext::windowFocusChange(Ogre::RenderWindow *rw)
+void BasicApplication::windowFocusChange(Ogre::RenderWindow *rw)
 {
     // if (mCurrentSample && !mSamplePaused) mCurrentSample->windowFocusChange(rw);
 }
 
 
-bool SampleContext::keyReleased(const OIS::KeyEvent &evt)
+bool BasicApplication::keyReleased(const OIS::KeyEvent &evt)
 {
     DancingGuiSys::GetInstance()->keyReleased(evt);
     //  if (mCurrentSample && !mSamplePaused) return mCurrentSample->keyReleased(evt);

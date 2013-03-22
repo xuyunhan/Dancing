@@ -24,6 +24,7 @@ void DancingGuiSys::setWidgetCreateRole()
     CheckBox *role_real;
     //设置当前状态
     this->mCurrentWidgetType = CreateRole;
+    this->isCurrentTypeChanged = true;
     //删除以往界面中的控件
     vector<OgreBites::Widget *>::iterator tempIte = this->mWidget_vec.begin();
     for (; tempIte != this->mWidget_vec.end(); ++tempIte)
