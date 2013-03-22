@@ -25,8 +25,8 @@
  THE SOFTWARE.
  -----------------------------------------------------------------------------
  */
-#ifndef __SampleContext_H__
-#define __SampleContext_H__
+#ifndef __BasicApplication_H__
+#define __BasicApplication_H__
 
 #include "Ogre.h"
 #include "OgrePlugin.h"
@@ -48,7 +48,7 @@ using namespace Ogre;
 * 作    者： grius
 * 日    期：2013年3月21日
 *******************************************************************/
-class SampleContext :
+class BasicApplication :
     public Ogre::FrameListener,
     public Ogre::WindowEventListener,
     public OIS::KeyListener,
@@ -56,8 +56,8 @@ class SampleContext :
 {
 public:
     //over
-    ~SampleContext();
-    SampleContext();
+    ~BasicApplication();
+    BasicApplication();
 
     void shutdown();//退出应用程序用
 
@@ -65,9 +65,6 @@ public:
 
     //巨多关键的配置信息皆在此种，建议分开
     void go(Sample *initialSample = 0);
-
-    //创建场景
-    void createScene();
 
 
     /*******************************************************************
@@ -91,7 +88,7 @@ public:
     //over mRoot->addFrameListener(this);
     bool frameEnded(const Ogre::FrameEvent &evt);
     bool frameStarted(const Ogre::FrameEvent &evt);
-    bool frameRenderingQueued(const Ogre::FrameEvent &evt);
+    virtual bool frameRenderingQueued(const Ogre::FrameEvent &evt);
 
 
 protected:

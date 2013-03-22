@@ -12,10 +12,11 @@ DancingGuiSys::DancingGuiSys(void)
     m_gameStyle = 1;//默认单人模式
 
     mCurrentWidgetType = BaseState;//默认界面状态
+    this->isCurrentTypeChanged = true;
 
     this->ConfigGuiInfo();//配置mMap
 
-    this->mGuiLisener = new GuiLisener();
+    this->mDancingGuiLisener = new DancingGuiLisener();
 }
 //for singleton
 DancingGuiSys *DancingGuiSys::instance = NULL;
@@ -35,6 +36,7 @@ void DancingGuiSys::setWidgetGameStart()
 {
 
     this->mCurrentWidgetType = GameStart;
+    this->isCurrentTypeChanged = true;
     //删除以往界面中的控件
     vector<OgreBites::Widget *>::iterator tempIte = this->mWidget_vec.begin();
     for (; tempIte != this->mWidget_vec.end(); ++tempIte)
@@ -49,19 +51,19 @@ void DancingGuiSys::setWidgetGameStart()
     //licorice
     //准备按钮
     Button *readyGame = mTrayMgr->createButton(OgreBites::TL_NONE, "Ready", Ogre::DisplayString(L"准备"), 100);
-    readyGame->getOverlayElement()->setPosition(this->mHorizontalCenter + 388, this->mVerticalCenter + 105);
+    readyGame->getOverlayElement()->setPosition(this->mHorizontalCenter*2  -118, this->mVerticalCenter + 105);
     this->mWidget_vec.push_back(readyGame);
 
 
     //练习按钮（舞步教学）
     Button *studyGame = mTrayMgr->createButton(OgreBites::TL_NONE, "Practise", Ogre::DisplayString(L"练习"), 100);
-    studyGame->getOverlayElement()->setPosition(this->mHorizontalCenter + 388, this->mVerticalCenter + 155);
+    studyGame->getOverlayElement()->setPosition(this->mHorizontalCenter*2  -118, this->mVerticalCenter + 155);
     this->mWidget_vec.push_back(studyGame);
 
 
     //退出按钮
     Button *quitGame = mTrayMgr->createButton(OgreBites::TL_NONE, "Quit", Ogre::DisplayString(L"退出游戏"), 100);
-    quitGame->getOverlayElement()->setPosition(this->mHorizontalCenter + 388, this->mVerticalCenter + 205);
+    quitGame->getOverlayElement()->setPosition(this->mHorizontalCenter*2  -118, this->mVerticalCenter + 205);
     this->mWidget_vec.push_back(quitGame);
 
 
@@ -69,7 +71,7 @@ void DancingGuiSys::setWidgetGameStart()
     if(this->m_gameStyle == 1)
     {
         Button *setGame = mTrayMgr->createButton(OgreBites::TL_NONE, "SetGame", Ogre::DisplayString(L"返回"), 100);
-        setGame->getOverlayElement()->setPosition(this->mHorizontalCenter + 388, this->mVerticalCenter + 255);
+        setGame->getOverlayElement()->setPosition(this->mHorizontalCenter*2  -118, this->mVerticalCenter + 255);
         this->mWidget_vec.push_back(setGame);
     }
 
@@ -77,7 +79,7 @@ void DancingGuiSys::setWidgetGameStart()
     if(this->m_gameStyle == 2)
     {
         Button *selectHouse = mTrayMgr->createButton(OgreBites::TL_NONE, "SelectHouse", Ogre::DisplayString(L"返回"), 100);
-        selectHouse->getOverlayElement()->setPosition(this->mHorizontalCenter + 388, this->mVerticalCenter + 255);
+        selectHouse->getOverlayElement()->setPosition(this->mHorizontalCenter*2  -118, this->mVerticalCenter + 255);
         this->mWidget_vec.push_back(selectHouse);
     }
 
@@ -97,6 +99,7 @@ void DancingGuiSys::setWidgetGameOver()
 void DancingGuiSys::setWidgetBaseState()
 {
     this->mCurrentWidgetType = BaseState;
+    this->isCurrentTypeChanged = true;
     //删除以往界面中的控件
     vector<OgreBites::Widget *>::iterator tempIte = this->mWidget_vec.begin();
     for (; tempIte != this->mWidget_vec.end(); ++tempIte)
@@ -130,6 +133,7 @@ void DancingGuiSys::setWidgetBaseState()
 void DancingGuiSys::setWidgetGameSet()
 {
     this->mCurrentWidgetType = GameSet;
+    this->isCurrentTypeChanged = true;
     //删除以往界面中的控件
     vector<OgreBites::Widget *>::iterator tempIte = this->mWidget_vec.begin();
     for (; tempIte != this->mWidget_vec.end(); ++tempIte)
@@ -234,10 +238,11 @@ void DancingGuiSys::nothing()
 void DancingGuiSys::setWidgetCreateHouse()
 {
     //清空以往已选房间的记录
-    this->mGuiLisener->clearInfo();
+    this->mDancingGuiLisener->clearInfo();
 
 
     this->mCurrentWidgetType = CreateHouse;
+    this->isCurrentTypeChanged = true;
 
     vector<OgreBites::Widget *>::iterator tempIte = this->mWidget_vec.begin();
     for (; tempIte != this->mWidget_vec.end(); ++tempIte)
@@ -460,6 +465,7 @@ void DancingGuiSys::setWidgetGamePractise()
 {
     //舞步练习的场景
     this->mCurrentWidgetType = GamePractise;
+    this->isCurrentTypeChanged = true;
     //删除以往界面中的控件
     vector<OgreBites::Widget *>::iterator tempIte = this->mWidget_vec.begin();
     for (; tempIte != this->mWidget_vec.end(); ++tempIte)
@@ -473,21 +479,15 @@ void DancingGuiSys::setWidgetGamePractise()
     //初始化一些必须的按钮
     //播放视频
     Button *playVideo = this->mTrayMgr->createButton(OgreBites::TL_NONE, "PlayVideo", Ogre::DisplayString(L"播放视频"), 100);
-    playVideo->getOverlayElement()->setPosition(this->mHorizontalCenter + 388, this->mVerticalCenter + 205);
+    playVideo->getOverlayElement()->setPosition(this->mHorizontalCenter*2  -118, this->mVerticalCenter + 205);
     this->mWidget_vec.push_back(playVideo);
     //返回按钮
     Button *returnGame = mTrayMgr->createButton(OgreBites::TL_NONE, "ReturnGame", Ogre::DisplayString(L"返回游戏"), 100);
-    returnGame->getOverlayElement()->setPosition(this->mHorizontalCenter + 388, this->mVerticalCenter + 255);
+    returnGame->getOverlayElement()->setPosition(this->mHorizontalCenter*2  -118, this->mVerticalCenter + 255);
     this->mWidget_vec.push_back(returnGame);
 }
 
-WidgetType DancingGuiSys::getCurrentWidgetType()
-{
-    return this->mCurrentWidgetType;
-}
-void DancingGuiSys::setCurrentWidgetType()
-{
-}
+
 
 void DancingGuiSys::ConfigGuiInfo()
 {
@@ -603,7 +603,7 @@ void DancingGuiSys::setTrayMgr(SdkTrayManager *tempTrayMgr)
 {
     this->mTrayMgr = tempTrayMgr;
     //传递
-    this->mGuiLisener->setTrayMgr(mTrayMgr);
+    this->mDancingGuiLisener->setTrayMgr(mTrayMgr);
 }
 void DancingGuiSys::setRoot(Ogre::Root *tempRoot)
 {
@@ -612,32 +612,35 @@ void DancingGuiSys::setRoot(Ogre::Root *tempRoot)
 
 bool DancingGuiSys::keyPressed( const OIS::KeyEvent &arg )
 {
-    if(arg.key == OIS::KC_A) mTextBox->setText(mTextBox->getText() + "a");
-    if(arg.key == OIS::KC_B) mTextBox->setText(mTextBox->getText() + "b");
-    if(arg.key == OIS::KC_C) mTextBox->setText(mTextBox->getText() + "c");
-    if(arg.key == OIS::KC_D) mTextBox->setText(mTextBox->getText() + "d");
-    if(arg.key == OIS::KC_E) mTextBox->setText(mTextBox->getText() + "e");
-    if(arg.key == OIS::KC_F) mTextBox->setText(mTextBox->getText() + "f");
-    if(arg.key == OIS::KC_G) mTextBox->setText(mTextBox->getText() + "g");
-    if(arg.key == OIS::KC_H) mTextBox->setText(mTextBox->getText() + "h");
-    if(arg.key == OIS::KC_I) mTextBox->setText(mTextBox->getText() + "i");
-    if(arg.key == OIS::KC_J) mTextBox->setText(mTextBox->getText() + "j");
-    if(arg.key == OIS::KC_K) mTextBox->setText(mTextBox->getText() + "k");
-    if(arg.key == OIS::KC_L) mTextBox->setText(mTextBox->getText() + "l");
-    if(arg.key == OIS::KC_M) mTextBox->setText(mTextBox->getText() + "m");
-    if(arg.key == OIS::KC_N) mTextBox->setText(mTextBox->getText() + "n");
-    if(arg.key == OIS::KC_O) mTextBox->setText(mTextBox->getText() + "o");
-    if(arg.key == OIS::KC_P) mTextBox->setText(mTextBox->getText() + "p");
-    if(arg.key == OIS::KC_Q) mTextBox->setText(mTextBox->getText() + "q");
-    if(arg.key == OIS::KC_R) mTextBox->setText(mTextBox->getText() + "r");
-    if(arg.key == OIS::KC_S) mTextBox->setText(mTextBox->getText() + "s");
-    if(arg.key == OIS::KC_T) mTextBox->setText(mTextBox->getText() + "t");
-    if(arg.key == OIS::KC_U) mTextBox->setText(mTextBox->getText() + "u");
-    if(arg.key == OIS::KC_V) mTextBox->setText(mTextBox->getText() + "v");
-    if(arg.key == OIS::KC_W) mTextBox->setText(mTextBox->getText() + "w");
-    if(arg.key == OIS::KC_X) mTextBox->setText(mTextBox->getText() + "x");
-    if(arg.key == OIS::KC_Y) mTextBox->setText(mTextBox->getText() + "y");
-    if(arg.key == OIS::KC_Z) mTextBox->setText(mTextBox->getText() + "z");
+    if (this->mCurrentWidgetType == CreateRole || this->mCurrentWidgetType == CreateHouse)
+    {
+        if(arg.key == OIS::KC_A) mTextBox->setText(mTextBox->getText() + "a");
+        if(arg.key == OIS::KC_B) mTextBox->setText(mTextBox->getText() + "b");
+        if(arg.key == OIS::KC_C) mTextBox->setText(mTextBox->getText() + "c");
+        if(arg.key == OIS::KC_D) mTextBox->setText(mTextBox->getText() + "d");
+        if(arg.key == OIS::KC_E) mTextBox->setText(mTextBox->getText() + "e");
+        if(arg.key == OIS::KC_F) mTextBox->setText(mTextBox->getText() + "f");
+        if(arg.key == OIS::KC_G) mTextBox->setText(mTextBox->getText() + "g");
+        if(arg.key == OIS::KC_H) mTextBox->setText(mTextBox->getText() + "h");
+        if(arg.key == OIS::KC_I) mTextBox->setText(mTextBox->getText() + "i");
+        if(arg.key == OIS::KC_J) mTextBox->setText(mTextBox->getText() + "j");
+        if(arg.key == OIS::KC_K) mTextBox->setText(mTextBox->getText() + "k");
+        if(arg.key == OIS::KC_L) mTextBox->setText(mTextBox->getText() + "l");
+        if(arg.key == OIS::KC_M) mTextBox->setText(mTextBox->getText() + "m");
+        if(arg.key == OIS::KC_N) mTextBox->setText(mTextBox->getText() + "n");
+        if(arg.key == OIS::KC_O) mTextBox->setText(mTextBox->getText() + "o");
+        if(arg.key == OIS::KC_P) mTextBox->setText(mTextBox->getText() + "p");
+        if(arg.key == OIS::KC_Q) mTextBox->setText(mTextBox->getText() + "q");
+        if(arg.key == OIS::KC_R) mTextBox->setText(mTextBox->getText() + "r");
+        if(arg.key == OIS::KC_S) mTextBox->setText(mTextBox->getText() + "s");
+        if(arg.key == OIS::KC_T) mTextBox->setText(mTextBox->getText() + "t");
+        if(arg.key == OIS::KC_U) mTextBox->setText(mTextBox->getText() + "u");
+        if(arg.key == OIS::KC_V) mTextBox->setText(mTextBox->getText() + "v");
+        if(arg.key == OIS::KC_W) mTextBox->setText(mTextBox->getText() + "w");
+        if(arg.key == OIS::KC_X) mTextBox->setText(mTextBox->getText() + "x");
+        if(arg.key == OIS::KC_Y) mTextBox->setText(mTextBox->getText() + "y");
+        if(arg.key == OIS::KC_Z) mTextBox->setText(mTextBox->getText() + "z");
+    }
     return true;
 }
 bool DancingGuiSys::keyReleased( const OIS::KeyEvent &arg )

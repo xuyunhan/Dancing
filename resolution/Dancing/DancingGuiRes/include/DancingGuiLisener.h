@@ -1,5 +1,5 @@
-#if !defined(_GuiLisener_H)
-#define _GuiLisener_H
+#if !defined(_DancingGuiLisener_H)
+#define _DancingGuiLisener_H
 #include <SdkTrays.h>
 #include <string>
 using namespace OgreBites;
@@ -11,11 +11,11 @@ using namespace std;
 * 作    者： grius
 * 日    期：2013年3月21日
 *******************************************************************/
-class GuiLisener: public SdkTrayListener
+class DancingGuiLisener: public SdkTrayListener
 {
 public:
-    GuiLisener(void);
-    ~GuiLisener(void);
+    DancingGuiLisener(void);
+    ~DancingGuiLisener(void);
 
     /*******************************************************************
     * 说    明：继承SdkTrayListener接口需实现的函数

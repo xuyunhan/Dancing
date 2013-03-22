@@ -1,13 +1,9 @@
-#include "OgrePlatform.h"
-
-#include "SampleContext.h"
-#include "ClientConnect.h"
-#include "DancingGuiSys.h"
+#include "BasicApplication.h"
 
 using namespace OgreBites;
 
 
-void SampleContext::shutdown()
+void BasicApplication::shutdown()
 {
     if (mTrayMgr)
     {
@@ -30,7 +26,7 @@ void SampleContext::shutdown()
     }
 }
 
-SampleContext::SampleContext()
+BasicApplication::BasicApplication()
 {
     mFSLayer = OGRE_NEW_T(FileSystemLayerImpl, Ogre::MEMCATEGORY_GENERAL)(OGRE_VERSION_NAME);
     mRoot = 0;
@@ -41,7 +37,7 @@ SampleContext::SampleContext()
     mTrayMgr = 0;
 }
 
-SampleContext::~SampleContext()
+BasicApplication::~BasicApplication()
 {
     OGRE_DELETE_T(mFSLayer, FileSystemLayer, Ogre::MEMCATEGORY_GENERAL);
 }
@@ -51,7 +47,7 @@ SampleContext::~SampleContext()
 * 作    者： grius
 * 日    期：2013年3月22日
 *******************************************************************/
-void SampleContext::go(Sample *initialSample)
+void BasicApplication::go(Sample *initialSample)
 {
     /*******************************************************************
     * 说    明：mRoot是整个应用的主要对象
@@ -165,7 +161,7 @@ void SampleContext::go(Sample *initialSample)
 
 
     //createDummyScene();
-    mTrayMgr = new SdkTrayManager("BrowserControls", mWindow, mMouse, DancingGuiSys::GetInstance()->getGuiLisener());
+    mTrayMgr = new SdkTrayManager("BrowserControls", mWindow, mMouse, DancingGuiSys::GetInstance()->getDancingGuiLisener());
 
 
     mTrayMgr->showLoadingBar(1, 0);
@@ -198,15 +194,6 @@ void SampleContext::go(Sample *initialSample)
     windowResized(mWindow);   // adjust menus for resolution
 
 
-
-
-    /*******************************************************************
-    * 说    明：创建场景
-    * 作    者： grius
-    * 日    期：2013年3月22日
-    *******************************************************************/
-    createScene();
-
     /*******************************************************************
     * 说    明：主循环开始
     * 作    者： grius
@@ -219,136 +206,6 @@ void SampleContext::go(Sample *initialSample)
     if (mRoot)
         OGRE_DELETE mRoot;
 }
-void SampleContext::createScene()
-{
-    /*******************************************************************
-    *******************************************************************/
 
 
-    // Create the scene
-    Ogre::Entity *ogreHead = mSceneMgr->createEntity("Head", "ogrehead.mesh");
-
-    Ogre::SceneNode *headNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-    headNode->attachObject(ogreHead);
-
-    // Set ambient light
-    mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
-
-    // Create a light
-    Ogre::Light *l = mSceneMgr->createLight("MainLight");
-    l->setPosition(20, 80, 50);
-    //-------------------------------------------------------------------------------------
-
-
-    /*******************************************************************
-    *******************************************************************/
-
-}
-
-
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-#define WIN32_LEAN_AND_MEAN
-#include "windows.h"
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-#include "SampleBrowser_OSX.h"
-#elif OGRE_PLATFORM == OGRE_PLATFORM_IPHONE
-#include "SampleBrowser_iOS.h"
-#endif
-
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-INT WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, INT)
-#elif OGRE_PLATFORM == OGRE_PLATFORM_SYMBIAN
-int mainWithTrap();
-int main()
-{
-    int res = 0;
-    __UHEAP_MARK;
-
-    // Create the control environment.
-    CCoeEnv *environment = new (ELeave) CCoeEnv();
-
-    TRAPD( err, environment->ConstructL( ETrue, 0 ) );
-
-    if( err != KErrNone )
-    {
-        printf( "Unable to create a CCoeEnv!\n" );
-        getchar();
-    }
-
-    TRAP( err, res = mainWithTrap());
-
-    // Close the stdout & stdin, else printf / getchar causes a memory leak.
-    fclose( stdout );
-    fclose( stdin );
-
-    // Cleanup
-    CCoeEnv::Static()->DestroyEnvironment();
-    delete CCoeEnv::Static();
-
-    __UHEAP_MARKEND;
-
-    return res;
-}
-
-int mainWithTrap()
-
-#else
-
-int main(int argc, char *argv[])
-#endif
-{
-#if OGRE_PLATFORM == OGRE_PLATFORM_IPHONE
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    int retVal = UIApplicationMain(argc, argv, @"UIApplication", @"AppDelegate");
-    [pool release];
-    return retVal;
-#elif (OGRE_PLATFORM == OGRE_PLATFORM_APPLE) && __LP64__
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-
-    mAppDelegate = [[AppDelegate alloc] init];
-[[NSApplication sharedApplication] setDelegate: mAppDelegate];
-    int retVal = NSApplicationMain(argc, (const char **) argv);
-
-    [pool release];
-
-    return retVal;
-#else
-
-    try
-    {
-        SampleContext sb;
-
-
-        ConnectManager::GetInstance();
-        DancingGuiSys::GetInstance();
-        ConnectManager::GetInstance()->ConfigClient();
-        ConnectManager::GetInstance()->StartUpClient();
-
-        /*while (1)
-        {
-            Sleep(30);
-            //send倒可以不用
-            ConnectManager::GetInstance()->Send();
-            ConnectManager::GetInstance()->Receive();
-        }*/
-        sb.go();
-    }
-    catch (Ogre::Exception &e)
-    {
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-        MessageBoxA(NULL, e.getFullDescription().c_str(), "An exception has occurred!", MB_ICONERROR | MB_TASKMODAL);
-#else
-        std::cerr << "An exception has occurred: " << e.getFullDescription().c_str() << std::endl;
-#endif
-#if OGRE_PLATFORM == OGRE_PLATFORM_SYMBIAN
-        getchar();
-#endif
-
-    }
-
-#endif
-    return 0;
-}
 
