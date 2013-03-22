@@ -23,7 +23,7 @@ ConnectManager::ConnectManager(void)
     m_clientID = RakNet::UNASSIGNED_SYSTEM_ADDRESS;
 
     strcpy(m_clientPort, "0");
-    strcpy(m_ip, "127.0.0.1");
+    strcpy(m_ip, "192.168.1.100");
     strcpy(m_serverPort, "1234");
 }
 ConnectManager::~ConnectManager(void)
@@ -51,8 +51,6 @@ void ConnectManager::StartUpClient(void)
 }
 void ConnectManager::Send(string tempstring, string tempstring2) //use for send message   ,it will appear in a main loop
 {
-
-    //cin >> m_message;
     if (strcmp(tempstring.c_str(), "newhouse") == 0)
     {
         string tempHouseName;
@@ -117,16 +115,25 @@ void ConnectManager::Send(string tempstring, string tempstring2) //use for send 
 
                 TiXmlElement *Person = RootElement->FirstChildElement();
 
+                string tempString = Person->Attribute("sex");
+                bool tempBool ;
+                if(tempString == "1")
+                {
+                    tempBool = true;
+                }
+                else
+                {
+                    tempBool = false;
+                }
+
                 tempRoleName = Person->Attribute("name");
-                tempRoleSex = Person->Attribute("sex");
+                tempRoleSex = tempBool;
                 tempRoleHire = Person->Attribute("hire");
                 tempRoleDecorate = Person->Attribute("decorate");
                 tempRoleUpware = Person->Attribute("upware");
                 tempRoleDownware = Person->Attribute("downware");
                 tempRoleShoe = Person->Attribute("shoe");
             }
-
-
 
             mBitStream.Write(tempHouseName);
             mBitStream.Write(tempRoleName);
@@ -176,8 +183,19 @@ void ConnectManager::Send(string tempstring, string tempstring2) //use for send 
 
         TiXmlElement *Person = RootElement->FirstChildElement();
 
+        string tempString = Person->Attribute("sex");
+        bool tempBool ;
+        if(tempString == "1")
+        {
+            tempBool = true;
+        }
+        else
+        {
+            tempBool = false;
+        }
+
         tempRoleName = Person->Attribute("name");
-        tempRoleSex = Person->Attribute("sex");
+        tempRoleSex = tempBool;
         tempRoleHire = Person->Attribute("hire");
         tempRoleDecorate = Person->Attribute("decorate");
         tempRoleUpware = Person->Attribute("upware");
@@ -386,12 +404,13 @@ void ConnectManager::handleHouseList(RakNet::BitStream *tempBitStream)
     }
     myDocument.SaveFile("houses.xml");//保存到文件
 
-    this->mDancingGuiSys->setWidgetCreateHouse();
+    DancingGuiSys::GetInstance()->setWidgetCreateHouse();
 
 }
 void ConnectManager::handleNewHouseRequest()
 {
-    cout << "接受新建房间请求！" << endl;
+    //cout << "接受新建房间请求！" << endl;
+    //此处是否应该也和获取房间列表一样通过nothing跳转一下，然后在此处调用跳转界面  其他几个handle也是
 }
 void ConnectManager::handleLoginRequsetTwo(RakNet::BitStream *tempBitStream)//SC_LOGIN_HOUSE
 {
@@ -506,13 +525,7 @@ void ConnectManager::handleOtherRoleJoin(RakNet::BitStream *tempBitStream)
 void ConnectManager::handleOtherRoleLeave()
 {
     cout << "接受另一个用户退出信息！" << endl;
-    //delete mOtherRole;
     TiXmlDocument myDocument ;//= new TiXmlDocument();
 
-
     myDocument.SaveFile("otherrole.xml");
-
 }
-
-
-

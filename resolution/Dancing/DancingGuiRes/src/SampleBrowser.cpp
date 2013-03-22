@@ -1,50 +1,247 @@
-/*
- -----------------------------------------------------------------------------
- This source file is part of OGRE
- (Object-oriented Graphics Rendering Engine)
- For the latest info, see http://www.ogre3d.org/
-
- Copyright (c) 2000-2011 Torus Knot Software Ltd
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- -----------------------------------------------------------------------------
- */
 #include "OgrePlatform.h"
-#if OGRE_PLATFORM == OGRE_PLATFORM_SYMBIAN
-#	ifdef __GCCE__
-#		include <staticlibinit_gcce.h>
-#	endif
 
-#	include <e32base.h> // for Symbian classes.
-#	include <coemain.h> // for CCoeEnv.
-
-#endif
-
-#include "SampleBrowser.h"
+#include "SampleContext.h"
 #include "ClientConnect.h"
 #include "DancingGuiSys.h"
 
 using namespace OgreBites;
-void SampleContext::setupWidgets()
-{
 
-    mTrayMgr->destroyAllWidgets();
+
+void SampleContext::shutdown()
+{
+    if (mTrayMgr)
+    {
+        delete mTrayMgr;
+        mTrayMgr = 0;
+    }
+
+    // remove window event listener before shutting down OIS
+    Ogre::WindowEventUtilities::removeWindowEventListener(mWindow, this);
+
+    //shutdownInput();
+    if (mInputMgr)
+    {
+        mInputMgr->destroyInputObject(mKeyboard);
+
+        mInputMgr->destroyInputObject(mMouse);
+
+        OIS::InputManager::destroyInputSystem(mInputMgr);
+        mInputMgr = 0;
+    }
+}
+
+SampleContext::SampleContext()
+{
+    mFSLayer = OGRE_NEW_T(FileSystemLayerImpl, Ogre::MEMCATEGORY_GENERAL)(OGRE_VERSION_NAME);
+    mRoot = 0;
+    mWindow = 0;
+    mInputMgr = 0;
+    mKeyboard = 0;
+    mMouse = 0;
+    mTrayMgr = 0;
+}
+
+SampleContext::~SampleContext()
+{
+    OGRE_DELETE_T(mFSLayer, FileSystemLayer, Ogre::MEMCATEGORY_GENERAL);
+}
+
+/*******************************************************************
+* 说    明：一个比较重要的函数的实现
+* 作    者： grius
+* 日    期：2013年3月22日
+*******************************************************************/
+void SampleContext::go(Sample *initialSample)
+{
+    /*******************************************************************
+    * 说    明：mRoot是整个应用的主要对象
+    * 作    者： grius
+    * 日    期：2013年3月22日
+    *******************************************************************/
+    Ogre::String pluginsPath = Ogre::StringUtil::BLANK;
+
+    pluginsPath = mFSLayer->getConfigFilePath("plugins.cfg");
+    mRoot = OGRE_NEW Ogre::Root(pluginsPath, mFSLayer->getWritablePath("ogre.cfg"),
+                                mFSLayer->getWritablePath("ogre.log"));
+    //end create mroot
+
+    /*******************************************************************
+    * 说    明：如果想显示配置窗口，则打开上面的注释，并把下面的注释掉
+    * 作    者： grius
+    * 日    期：2013年3月22日
+    *******************************************************************/
+    /*if(mRoot->showConfigDialog())
+    {
+        mWindow = mRoot->initialise(true, "不如跳舞");
+    }*/
+    mRoot->restoreConfig();
+    mWindow = mRoot->initialise(true, "不如跳舞");
+    //end create mWindow
+
+
+    /*******************************************************************
+    * 说    明：mSceneMgr mCamera Viewport
+    * 作    者： grius
+    * 日    期：2013年3月22日
+    *******************************************************************/
+    mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC, "dancingscenemanager");
+
+    mCamera = mSceneMgr->createCamera("PlayerCam");
+    mCamera->setPosition(Ogre::Vector3(0, 0, 80));
+    mCamera->lookAt(Ogre::Vector3(0, 0, -300));
+    mCamera->setNearClipDistance(5);
+
+    Ogre::Viewport *vp = mWindow->addViewport(mCamera);
+    vp->setBackgroundColour(Ogre::ColourValue(0, 0, 0));
+
+    mCamera->setAspectRatio(Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+    //end
+
+
+
+    //some loader
+    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);//干啥的？
+    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
+
+    //some setter
+    OIS::ParamList pl;
+    size_t winHandle = 0;
+    std::ostringstream winHandleStr;
+    mWindow->getCustomAttribute("WINDOW", &winHandle);
+    winHandleStr << winHandle;
+    pl.insert(std::make_pair("WINDOW", winHandleStr.str()));
+
+    /*******************************************************************
+    * 说    明：OIS 输入系统
+    * 作    者： grius
+    * 日    期：2013年3月22日
+    *******************************************************************/
+    mInputMgr = OIS::InputManager::createInputSystem(pl);
+
+    mKeyboard = static_cast<OIS::Keyboard *>(mInputMgr->createInputObject(OIS::OISKeyboard, true));
+    mMouse = static_cast<OIS::Mouse *>(mInputMgr->createInputObject(OIS::OISMouse, true));
+    mKeyboard->setEventCallback(this);
+    mMouse->setEventCallback(this);
+    //end create InputDevices
+
+
+
+
+    windowResized(mWindow);    // do an initial adjustment of mouse area
+
+
+    /*******************************************************************
+    * 说    明：locateResources
+    * 作    者： grius
+    * 日    期：2013年3月22日
+    *******************************************************************/
+    Ogre::ConfigFile cf;
+    cf.load(mFSLayer->getConfigFilePath("resources.cfg"));// load resource paths from config file
+
+    Ogre::ConfigFile::SectionIterator seci = cf.getSectionIterator();
+    Ogre::String sec, type, arch;
+
+    while (seci.hasMoreElements())// go through all specified resource groups
+    {
+        sec = seci.peekNextKey();
+        Ogre::ConfigFile::SettingsMultiMap *settings = seci.getNext();
+        Ogre::ConfigFile::SettingsMultiMap::iterator i;
+
+        // go through all resource paths
+        for (i = settings->begin(); i != settings->end(); i++)
+        {
+            type = i->first;
+            arch = i->second;
+
+            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(arch, type, sec);
+        }
+    }
+    //endlocateResources
+    //endsetup
+
+    Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("Essential");
+
+
+
+    //createDummyScene();
+    mTrayMgr = new SdkTrayManager("BrowserControls", mWindow, mMouse, DancingGuiSys::GetInstance()->getGuiLisener());
+
+
+    mTrayMgr->showLoadingBar(1, 0);
+    Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("Popular");
+    mTrayMgr->hideLoadingBar();
+    //loadResources
+
+
+    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
+
+    // adds context as listener to process context-level (above the sample level) events
+    mRoot->addFrameListener(this);
+    Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
+
+    // create template material for sample thumbnails
+    //Ogre::MaterialPtr thumbMat = Ogre::MaterialManager::getSingleton().create("SampleThumbnail", "Essential");
+    //thumbMat->getTechnique(0)->getPass(0)->createTextureUnitState();
+
+
+
+    /*******************************************************************
+    * 说    明：给DancingGuiSys递参
+    * 作    者： grius
+    * 日    期：2013年3月22日
+    *******************************************************************/
+    DancingGuiSys::GetInstance()->setTrayMgr(mTrayMgr);
+    DancingGuiSys::GetInstance()->setRoot(mRoot);
+    DancingGuiSys::GetInstance()->setWidgetBaseState();
+
+    windowResized(mWindow);   // adjust menus for resolution
+
+
+
+
+    /*******************************************************************
+    * 说    明：创建场景
+    * 作    者： grius
+    * 日    期：2013年3月22日
+    *******************************************************************/
+    createScene();
+
+    /*******************************************************************
+    * 说    明：主循环开始
+    * 作    者： grius
+    * 日    期：2013年3月22日
+    *******************************************************************/
+    mRoot->startRendering();    // start the render loop
+
+    mRoot->saveConfig();
+    shutdown();
+    if (mRoot)
+        OGRE_DELETE mRoot;
+}
+void SampleContext::createScene()
+{
+    /*******************************************************************
+    *******************************************************************/
+
+
+    // Create the scene
+    Ogre::Entity *ogreHead = mSceneMgr->createEntity("Head", "ogrehead.mesh");
+
+    Ogre::SceneNode *headNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
+    headNode->attachObject(ogreHead);
+
+    // Set ambient light
+    mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+
+    // Create a light
+    Ogre::Light *l = mSceneMgr->createLight("MainLight");
+    l->setPosition(20, 80, 50);
+    //-------------------------------------------------------------------------------------
+
+
+    /*******************************************************************
+    *******************************************************************/
 
 }
 
@@ -125,6 +322,7 @@ int main(int argc, char *argv[])
 
 
         ConnectManager::GetInstance();
+        DancingGuiSys::GetInstance();
         ConnectManager::GetInstance()->ConfigClient();
         ConnectManager::GetInstance()->StartUpClient();
 

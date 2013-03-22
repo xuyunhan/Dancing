@@ -17,15 +17,17 @@
 #include <string.h>
 #include "Gets.h"
 
-
-
-
 #include "NetworkIDObject.h"
 
 #include <vector>
 #include "OgreSingleton.h"
 using namespace std;
 
+/*******************************************************************
+* 说    明：维护开始游戏后角色的信息的对象，应包含逻辑信息（角色名称等）、渲染信息（哪个模型）等等
+* 作    者： grius
+* 日    期：2013年3月21日
+*******************************************************************/
 class DancingRole
 {
 public:
@@ -42,11 +44,11 @@ private:
     string mRoleDownware;
     string mRoleShoe;
 
-    //manager msg
+    //manager msg该变量主要用于服务器端，客户端无需··
     RakNet::RakNetGUID mGuid;
 
-
 public:
+    //8对getter和setter
     void setterGuid(RakNet::RakNetGUID temp)
     {
         mGuid = temp;
@@ -115,5 +117,4 @@ public:
 
 };
 #endif
-//<role name="1" sex="男" hire="1" decorate="1" upware="1" downware="1" shoe="1" />
 

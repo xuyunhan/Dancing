@@ -37,7 +37,13 @@ using namespace std;
 unsigned char GetPacketIdentifier(RakNet::Packet *p);
 enum CUSTOM_MESSAGE_ID_TYPE//CustomMessageIDType
 {
-    //DefaultMessageIDTypes结束于129
+    /*******************************************************************
+    * 说    明：此枚举用于网络通信类型的标识，例如客户端请求房间类表或服务器发送类表等
+                           且RAKNET网络引擎本身也维护了一个类似的枚举，且结束于DefaultMessageIDTypes
+    					   DefaultMessageIDTypes在RAKNET的值排到了129，故此处枚举值从130开始
+    * 作    者： grius
+    * 日    期：2013年3月21日
+    *******************************************************************/
     CS_GET_HOUSES_LIST = 130,//用于局域网模式客户端向服务器请求房间列表
     SC_GET_HOUSES_LIST ,//用于局域网模式服务器向客户端发送房间列表
 
@@ -50,30 +56,42 @@ enum CUSTOM_MESSAGE_ID_TYPE//CustomMessageIDType
     SC_LOGOFF_HOUSE,//用于局域网模式服务器向客户端通知某某退出某房间
 
     CS_LOGIN_HOUSE,//用于局域网模式客户端向服务器申请加入某房间
+    /*******************************************************************
+    * 说    明：因为我用的传送消息，一到一定次数就会失效，目前先把下面这条消息分做两次发送
+    * 作    者： grius
+    * 日    期：2013年3月21日
+    *******************************************************************/
     SC_LOGIN_HOUSE_ONE,//用于局域网模式服务器向客户端通知某某加入某房间
-    SC_LOGIN_HOUSE_TWO,//
+    SC_LOGIN_HOUSE_TWO,//用于局域网模式服务器向客户端通知某某加入某房间
     SC_LOGIN_HOUSE_TO_OTHERONE,//用于局域网模式服务器向房间内另一客户端通知某某加入房间
 
-    //由于房间列表目前是客户端主动请求，故此不必
-    //SC_DELETE_HOUSE,//用于局域网模式服务器向客户端通知某房间已经不存在了
 
-    //建议添加一些出错信息的处理 也不必要了，因为类似于房间重名，角色重名，房间位置不够等信息都在客户端进行检测了
 
-    //fux add 客户端需要不停获取房间信息
-
-    //fux add 修改房间参数  或者在客户端每次进入游戏就创建一次房间（大致可行）
-
+    /*******************************************************************
+    * 说    明：由于房间列表目前是客户端主动请求（每隔一段时间请求一次），故此不必通知客户端某某房间已经不再了
+                           建议添加一些出错信息的处理,如网络过度拥塞的情况，有的请求会变质，但目前先不费精力去做此处
+    					   类似于房间重名，角色重名，房间位置不够等信息都在客户端进行检测
+    * 作    者： grius
+    * 日    期：2013年3月21日
+    *******************************************************************/
 };
+
+/*******************************************************************
+* 说    明：此类为单例模式
+* 作    者： grius
+* 日    期：2013年3月21日
+*******************************************************************/
 class ConnectManager
 {
-    //singleton
+    //for singleton
+private:
     ConnectManager(void);
     ~ConnectManager(void);
     static ConnectManager *instance;
 public:
-    //singleton
     static ConnectManager *GetInstance();//get the singleton pointer
 
+public:
     void ConfigClient(void); //config sever`s some info
     void StartUpClient(void);//starup the sever
 
@@ -87,9 +105,6 @@ public:
     void handleOtherRoleJoin(RakNet::BitStream *);
     void handleOtherRoleLeave();
 
-    DancingGuiSys *mDancingGuiSys;
-
-
 
 private:
 
@@ -102,16 +117,9 @@ private:
     char m_ip[64], m_serverPort[30], m_clientPort[30];
 
 
-    string m_message;
-
-    //RakNet::BitStream mBitStream;
-    //RakNet::BitStream mEmptyBitStream;
+    //对应于文件顶部的结构体
     RakNet::MessageID mTypeId; // This will be assigned to a type I've added after ID_USER_PACKET_ENUM, lets say ID_SET_TIMED_MINE
 
-
-    DancingHouse *mDancingHouse;
-    DancingRole *mRole;
-    DancingRole *mOtherRole;
 };
 
 #endif  //_CONNECTMANAGER_H

@@ -15,141 +15,155 @@
 #include <OISKeyboard.h>
 #include <OISMouse.h>
 
-
 #include <SdkCameraMan.h>
 #include <SdkTrays.h>
 #include <map>
 #include <string>
 #include <vector>
 #include "ParseXml.h"
+#include "GuiLisener.h"
 
 using namespace std;
 using namespace OgreBites;
-//窗口类型   即应用程序有几个界面
+/*******************************************************************
+* 说    明：窗口类型标志
+* 作    者： grius
+* 日    期：2013年3月21日
+*******************************************************************/
 enum WidgetType
 {
     BaseState,
     CreateRole,
     GameSet,
     CreateHouse,
-    // Housed,
     GameStart,
+    GamePractise,
     GameOver,
 };
-class DancingGuiSys;
+class DancingGuiSys;//前向声明
+//
 typedef void(DancingGuiSys::*functionPoint)();
+
+/*******************************************************************
+* 说    明：此类为单例模式
+* 作    者： grius
+* 日    期：2013年3月21日
+*******************************************************************/
 class DancingGuiSys
 {
-public:
+    //for singleton
+private:
     DancingGuiSys(void);
-
-    /*******************************************************************
-    * 函数名称：
-    * 功    能：带参构造
-    * 参    数：
-    * 返 回 值：
-    * 作    者： fux
-    * 电子邮箱：10809148@qq.com
-    * 日    期：2013年3月7日
-    *******************************************************************/
-    DancingGuiSys(OgreBites::SdkTrayManager *sdktraymanager, Ogre::Root *mRoot, Ogre::RenderWindow *mWindow);
     ~DancingGuiSys(void);
+    static DancingGuiSys *instance;
+public:
+    static DancingGuiSys *GetInstance();//get the singleton pointer
+
+public:
     /*******************************************************************
-    * 函数名称：setWidget***
-    * 功    能：每个set函数对应一个界面的设置
-    * 参    数：
-    * 返 回 值：
-    * 作    者： fux
-    * 电子邮箱：10809148@qq.com
-    * 日    期：2013年3月7日
+    * 说    明：设置界面函数，理论上一个界面对应一个函数
+    * 作    者： grius
+    * 日    期：2013年3月21日
     *******************************************************************/
     void setWidgetBaseState();
     void setWidgetCreateRole();
     void setWidgetGameSet();
     void setWidgetCreateHouse();
-    // void setWidgetHoused();
     void setWidgetGameStart();
     void setWidgetGameOver();
     void setWidgetAboutMe();
+    void setWidgetCreateNewHouse();
+    void setWidgetGameReady();
+    void setWidgetGamePractise();
+    void setWidgetPlayVideo();
 
+    /*******************************************************************
+    * 说    明：进入局域网模式中创建房间界面CreateHouse的跳转函数
+                           CreateHouse界面会请求获取网络上已有的房间列表，然后写在本地的houses.xml文件，
+    					   然后到CreateHouse界面进行从houses.xml读取信息进行创建
+    					   因为网络会有延迟，故此处需要一个中转函数进行协助
+    * 作    者： grius
+    * 日    期：2013年3月21日
+    *******************************************************************/
     void nothing();
 
 
+    //跳转函数，mPair中存储了（按钮、跳转界面）的对应关系，故点击某界面后通过响应会调用到此函数进行界面跳转
+    void executeFunction( string paraString)
+    {
+        mPair.first = this->mCurrentWidgetType;
+        mPair.second = paraString;
+        functionPoint temp = this->mMap[mPair];
+        (this->*temp)();
+    }
+
+    //设置mMap
+    void ConfigGuiInfo();
+
+    //当前出处于局域网或是单机模式的变量的设置
+    void setGameStyle( int paraInt)
+    {
+        m_gameStyle = paraInt;
+    }
 
     /*******************************************************************
-    * 函数名称：
-    * 功    能：Handle  Gui·s  Event
-    * 参    数：
-    * 返 回 值：
-    * 作    者： fux
-    * 电子邮箱：10809148@qq.com
-    * 日    期：2013年3月7日
+    * 说    明：未开始游戏前的界面操作中会有角色预览、场景预览等信息，在此处理显示模型
+                           sceneManager可以通过mRoot得到
+    * 作    者： grius
+    * 日    期：2013年3月21日
     *******************************************************************/
-    void buttonHit(Button *button) ;
-    void itemSelected(SelectMenu *menu) ;
-    void labelHit(Label *label) ;
-    void sliderMoved(Slider *slider) ;
-    void checkBoxToggled(CheckBox *box) ;
-    void okDialogClosed(const Ogre::DisplayString &message) ;
-    void yesNoDialogClosed(const Ogre::DisplayString &question, bool yesHit) ;
-
     void changgeScene(string);
 
+    //some setter
+    void setTrayMgr(SdkTrayManager *mTrayMgr);
+    void setRoot(Ogre::Root *mRoot);
 
-    /*******************************************************************
-    * 函数名称：
-    * 功    能：mCurrentWidgetType的gettere和setter
-    * 参    数：
-    * 返 回 值：
-    * 作    者： fux
-    * 电子邮箱：10809148@qq.com
-    * 日    期：2013年3月7日
-    *******************************************************************/
+
+    //mCurrentWidgetType的gettere和setter
     WidgetType getCurrentWidgetType();
     void setCurrentWidgetType();
 
-
-
-    /*******************************************************************
-    * 函数名称：
-    * 功    能：设置（界面、按钮）与响应函数的关联
-    * 参    数：
-    * 返 回 值：
-    * 作    者： fux
-    * 电子邮箱：10809148@qq.com
-    * 日    期：2013年3月7日
-    *******************************************************************/
-    void ConfigGuiInfo();
-
-
-    /*******************************************************************
-    * 函数名称：
-    * 功    能：监听鼠标键盘  用于文字输入
-    * 参    数：
-    * 返 回 值：
-    * 作    者： fux
-    * 电子邮箱：10809148@qq.com
-    * 日    期：2013年3月11日
-    *******************************************************************/
-    bool mouseMoved( const OIS::MouseEvent &arg );
-    bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
-    bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
-
+    //key event callback
     bool keyPressed( const OIS::KeyEvent &arg );
     bool keyReleased( const OIS::KeyEvent &arg );
 
+    //some getter or setter
+    void setVerticalCenter(int parVerticalCenter)
+    {
+        mVerticalCenter = parVerticalCenter;
+    }
+    void setHorizontalCenter(int parHorizontalCenter)
+    {
+        mHorizontalCenter = parHorizontalCenter;
+    }
+    GuiLisener *getGuiLisener()
+    {
+        return mGuiLisener;
+    }
+
+
 private:
+
+    //保存renderwindow的中点坐标，用以调整界面控件显示位置
+    int mVerticalCenter;
+    int mHorizontalCenter;
+
+
+    //OgreSDKTray的监听器，处理buttonhit等信息皆在此
+    GuiLisener *mGuiLisener;
+
 
     //当前界面的状态，即处于哪一个界面
     WidgetType mCurrentWidgetType;
 
-    OgreBites::SdkTrayManager *mTrayMgr;
 
-    Ogre::Root *mRoot;
-    Ogre::RenderWindow *mWindow;    // render window
+    //从OGRE主程序传过来的变量
+    OgreBites::SdkTrayManager *mTrayMgr;//用于管理界面
+    Ogre::Root *mRoot;//用于管理应用程序停止
+
 
     //根据（界面、按钮）对决定响应函数的关联
-    std::pair<WidgetType, string> mPair;
+    std::pair<WidgetType, string> mPair;//mMap的辅助
     std::map <std::pair<WidgetType, string>, functionPoint> mMap;
 
     //界面原件容器
@@ -158,29 +172,10 @@ private:
     //游戏模式：单人/局域网对战   1-单人  2-局域网
     int  m_gameStyle;
 
-    //OgreBites::Button* mButton;
-    //只为在OgreNone中设置位置所用，避免每次重新申请的麻烦
-    //Ogre::OverlayElement *mOverlayElement;
-
-    //把局域网和单人模式的控件设为成员变量，控制界面跳转方式
-    CheckBox  *singleBox;
-    CheckBox  *multiBox;
-
-    //男生角色，还是女生角色，决定游戏服装的选择
-    CheckBox  *maleBox;
-    CheckBox  *femaleBox;
-
-    //无奈的变量
+    //无奈的变量 为了那个角色名和房间名的输入
     OgreBites::TextBox *mTextBox;
 
     //xml
     ParseXml *mParseXml;
-
-    //
-    string mWillHouseLabelName;
-    string mWillHouse;
-
-
-
 };
 #endif

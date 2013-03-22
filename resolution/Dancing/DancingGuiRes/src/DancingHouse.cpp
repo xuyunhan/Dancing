@@ -17,7 +17,6 @@ DancingHouse::DancingHouse(string temp1, string temp2, string temp3, string temp
     mHouseDancemusic = temp3;
     mHouseDancescene = temp4;
     mHouseSite = 1;//由于有创建者，故新建房间时剩余座位为1
-
 }
 
 DancingHouse::~DancingHouse(void)
@@ -37,6 +36,4 @@ void DancingHouse::deleteRole (DancingRole *temp1, int temp2)//fux add temp2参数
 {
     delete temp1;
     this->mHouseSite += 1;
-
-
 }
