@@ -154,7 +154,38 @@ public:
         return isCurrentTypeChanged;
     }
 
+    /*******************************************************************
+        * 函数名称：createPreviewImage
+        * 功    能：在选择形象的时候创造预览人物形象
+        * 参    数：4个，选择的形象部件名称
+        * 返 回 值： void
+        * 作    者： xuyunhan
+        * 电子邮箱：271147505@qq.com
+        * 日    期：2013年3月20日
+        *******************************************************************/
+    void createPreviewImage(Ogre::String hairName, Ogre::String upName, Ogre::String downName, Ogre::String shoesName);
 
+    /*******************************************************************
+    * 函数名称：createPreviewImage
+    * 功    能：在选择形象的时候创造预览人物形象
+    * 参    数：2个，选择的形象部件类型和名称
+    * 返 回 值： void
+    * 作    者： xuyunhan
+    * 电子邮箱：271147505@qq.com
+    * 日    期：2013年3月21日
+    *******************************************************************/
+    void createPreviewImage(Ogre::String widgetName, Ogre::String selectedName);
+
+    /*******************************************************************
+    * 函数名称：replaceEntity
+    * 功    能：替换实体对象的模型
+    * 参    数：2个，被替换的实体指针，新实体对象的模型名字
+    * 返 回 值： void
+    * 作    者： xuyunhan
+    * 电子邮箱：271147505@qq.com
+    * 日    期：2013年3月22日
+    *******************************************************************/
+    void replaceEntity(Ogre::Entity *&entyReplaced, Ogre::String newEntyName);
 
 
 private:
@@ -194,5 +225,14 @@ private:
 
     //xml
     ParseXml *mParseXml;
+
+    //xuyunhan
+    //身体各部分实体的指针,这样方便换装
+    Ogre::Entity *entyHair;
+    Ogre::Entity *entyForWomanLongHair;
+    Ogre::Entity *entyUp;
+    Ogre::Entity *entyDown;
+    Ogre::Entity *entyShoes_L;
+    Ogre::Entity *entyShoes_R;
 };
 #endif
