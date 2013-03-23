@@ -60,13 +60,23 @@ void Dancing::createSceneForGamePractise()
 {}
 void Dancing::createSceneForCreateRole()
 {
-    mSceneMgr->destroyAllEntities();
-    mSceneMgr->clearScene();//getRootSceneNode()->();
-    Ogre::Entity *tempEntity;
-    //tempEntity->;
-    //mSceneMgr->
-    //mRoot ->
-    //tempEntity = mSceneMgr->getEntity("lefthead");
+    //mSceneMgr->destroyAllEntities();
+    //mSceneMgr->clearScene();//getRootSceneNode()->();
+    //Ogre::Entity *tempEntity;
+	//xuyunhan
+
+
+    // Position it at 500 in Z direction
+    mCamera->setPosition(Ogre::Vector3(0, 0, 80));
+    // Look back along -Z
+    mCamera->lookAt(Ogre::Vector3(0, 0, -300));
+    mCamera->setNearClipDistance(5);
+
+	Ogre::Light *l = mSceneMgr->createLight("MainLigh1t");
+    l->setPosition(20, 80, 50);
+	Ogre::Light *lightForPreview = mSceneMgr->createLight("LightForPreview");
+	lightForPreview->setPosition(25,75,110);
+
 
 }
 void Dancing::createSceneForCreateHouse()

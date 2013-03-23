@@ -108,8 +108,8 @@ void DancingGuiSys::setWidgetCreateRole()
 
     //发型下拉框
     Ogre::StringVector  hairstyle;
-    hairstyle.push_back(Ogre::DisplayString("shorthire"));
-    hairstyle.push_back(Ogre::DisplayString("longhire"));
+    hairstyle.push_back(Ogre::DisplayString("ShortHair"));
+    hairstyle.push_back(Ogre::DisplayString("LongHair"));
     OgreBites::SelectMenu *shair = mTrayMgr->createThickSelectMenu(OgreBites::TL_NONE, "S_Hair", Ogre::DisplayString(L"请选择"), 180, 10, hairstyle);
     shair->getOverlayElement()->setHeight(50);
     //shair->(0);
@@ -141,8 +141,8 @@ void DancingGuiSys::setWidgetCreateRole()
 
     //上装
     Ogre::StringVector  shangstyle;
-    shangstyle.push_back(Ogre::DisplayString(L"shiirt"));
-    shangstyle.push_back(Ogre::DisplayString(L"Tshiirt"));
+    shangstyle.push_back(Ogre::DisplayString("Overcoat"));
+    shangstyle.push_back(Ogre::DisplayString("Sweater"));
     OgreBites::SelectMenu *shangzhuang = mTrayMgr->createThickSelectMenu(OgreBites::TL_NONE, "S_Shangzhuang", Ogre::DisplayString(L"请选择"), 180, 10, shangstyle);
     shangzhuang->getOverlayElement()->setHeight(50);
     shangzhuang->getOverlayElement()->setPosition(this->mHorizontalCenter - 265,  this->mVerticalCenter - 5);
@@ -159,8 +159,8 @@ void DancingGuiSys::setWidgetCreateRole()
 
     //下装
     Ogre::StringVector  xiastyle;
-    xiastyle.push_back(Ogre::DisplayString(L"mini-Skirt"));
-    xiastyle.push_back(Ogre::DisplayString(L"Boshimiya-Skirt"));
+    xiastyle.push_back(Ogre::DisplayString("Jeans"));
+    xiastyle.push_back(Ogre::DisplayString("WhitePants"));
     OgreBites::SelectMenu *xiazhuang = mTrayMgr->createThickSelectMenu(OgreBites::TL_NONE, "S_Xiazhuang", Ogre::DisplayString(L"请选择"), 180, 10, xiastyle);
     xiazhuang->getOverlayElement()->setHeight(50);
     xiazhuang->getOverlayElement()->setPosition(this->mHorizontalCenter - 265,  this->mVerticalCenter + 55);
@@ -174,8 +174,8 @@ void DancingGuiSys::setWidgetCreateRole()
     this->mWidget_vec.push_back(lshoes);
 
     Ogre::StringVector  shoestyle;
-    shoestyle.push_back(Ogre::DisplayString(L"song"));
-    shoestyle.push_back(Ogre::DisplayString(L"gao"));
+    shoestyle.push_back(Ogre::DisplayString("Leather"));
+    shoestyle.push_back(Ogre::DisplayString("RunningShoes"));
     OgreBites::SelectMenu *sshoes = mTrayMgr->createThickSelectMenu(OgreBites::TL_NONE, "S_Shoes", Ogre::DisplayString(L"请选择"), 180, 10, shoestyle);
     sshoes->getOverlayElement()->setHeight(50);
     sshoes->getOverlayElement()->setPosition(this->mHorizontalCenter - 265,  this->mVerticalCenter + 115);
@@ -243,9 +243,163 @@ void DancingGuiSys::setWidgetCreateRole()
     quitGame->getOverlayElement()->setPosition(this->mHorizontalCenter + 78,  this->mVerticalCenter + 275);
     this->mWidget_vec.push_back(quitGame);
 
+	//xuyunhan
+	changgeScene("CreateRole");//生成默认的预览形象
+
     //其他控件
 }//startgame createhouse createrole gameset housed
+//xuyunhan
 void DancingGuiSys::changgeScene(string widgetName)
 {
+	//根据男女变换选项
+	if (widgetName == "C_SexF" || widgetName == "C_SexM" || widgetName == "CreateRole")
+	{
+		//获取选框
+		OgreBites::SelectMenu * hairSelect =(OgreBites::SelectMenu *) this->mTrayMgr->getWidget("S_Hair");
+		OgreBites::SelectMenu * upSelect =(OgreBites::SelectMenu *) this->mTrayMgr->getWidget("S_Shangzhuang");
+		OgreBites::SelectMenu * downSelect =(OgreBites::SelectMenu *) this->mTrayMgr->getWidget("S_Xiazhuang");
+		OgreBites::SelectMenu * shoesSelect =(OgreBites::SelectMenu *) this->mTrayMgr->getWidget("S_Shoes");
 
+		CheckBox *tempCheckBoxF = (CheckBox *)this->mTrayMgr->getWidget("C_SexF");
+		CheckBox *tempCheckBoxM = (CheckBox *)this->mTrayMgr->getWidget("C_SexM");
+		if (tempCheckBoxF->isChecked())//若女
+		{
+			//上身
+			upSelect->clearItems();//清空
+			//添加
+			upSelect->addItem("BrownSweater");
+			upSelect->addItem("PinkSweater");
+
+			//下身
+			downSelect->clearItems();
+			downSelect->addItem("DarkPants");
+			downSelect->addItem("WhitePants");
+
+			//鞋子
+			shoesSelect->clearItems();
+			shoesSelect->addItem("Boots");
+			shoesSelect->addItem("WhiteShoes");
+		}
+		else if (tempCheckBoxM->isChecked())//若男
+		{
+			//上身
+			upSelect->clearItems();
+			upSelect->addItem("Overcoat");
+			upSelect->addItem("Sweater");
+
+			//下身
+			downSelect->clearItems();
+			downSelect->addItem("Jeans");
+			downSelect->addItem("WhitePants");
+
+			//鞋子
+			shoesSelect->clearItems();
+			shoesSelect->addItem("Leather");
+			shoesSelect->addItem("RunningShoes");
+		}
+		//获取当前选项
+		Ogre::DisplayString hairName = hairSelect->getSelectedItem();
+		Ogre::DisplayString upName = upSelect->getSelectedItem();
+		Ogre::DisplayString downName = downSelect->getSelectedItem();
+		Ogre::DisplayString shoesName = shoesSelect->getSelectedItem();
+
+		//创建预览角色
+		createPreviewImage(hairName,upName,downName,shoesName);
+
+	}//男女变换end
+
+	//若为配饰则无视
+	else if (widgetName == "S_Rings")
+	{
+		;
+	}
+	//若为单项变换
+	else
+	{
+		OgreBites::SelectMenu * widgetSelect = (OgreBites::SelectMenu *) this->mTrayMgr->getWidget(widgetName);//获取选框
+		Ogre::DisplayString selectedName = widgetSelect->getSelectedItem();//获取当前选项
+		createPreviewImage(widgetName,selectedName);//变换选择部分
+	}
+}
+
+void DancingGuiSys::createPreviewImage(Ogre::String widgetName,Ogre::String selectedName)
+{
+	CheckBox *tempCheckBoxF = (CheckBox *)this->mTrayMgr->getWidget("C_SexF");
+		CheckBox *tempCheckBoxM = (CheckBox *)this->mTrayMgr->getWidget("C_SexM");
+	if (tempCheckBoxF->isChecked())//若女
+	{
+		if (widgetName == "S_Hair")
+		{
+			selectedName.insert(0,"First.Woman.Hair.");//第0位（也就是开头）插入字符串
+			replaceEntity(entyHair,selectedName+".mesh");
+			if (selectedName == "First.Woman.Hair.LongHair")
+			{
+				replaceEntity(entyForWomanLongHair,"First.Woman.Hair.PartforLongHair.mesh");
+			}
+		}
+		else if (widgetName == "S_Shangzhuang")
+		{
+			selectedName.insert(0,"First.Woman.Up.");
+			replaceEntity(entyUp,selectedName+".mesh");
+		}
+		else if (widgetName == "S_Xiazhuang")
+		{
+			selectedName.insert(0,"First.Woman.Down.");
+			replaceEntity(entyDown,selectedName+".mesh");
+		}
+		else if (widgetName == "S_Shoes")
+		{
+			selectedName.insert(0,"First.Woman.Shoes.");
+			replaceEntity(entyShoes_L,selectedName+".L.mesh");
+			replaceEntity(entyShoes_R,selectedName+".R.mesh");
+		}
+	} 
+	else if(tempCheckBoxM->isChecked())//若男
+	{
+		if (widgetName == "S_Hair")
+		{
+			selectedName.insert(0,"First.Man.Hair.");//第0位（也就是开头）插入字符串
+			replaceEntity(entyHair,selectedName+".mesh");
+		}
+		else if (widgetName == "S_Shangzhuang")
+		{
+			selectedName.insert(0,"First.Man.Up.");
+			replaceEntity(entyUp,selectedName+".mesh");
+		}
+		else if (widgetName == "S_Xiazhuang")
+		{
+			selectedName.insert(0,"First.Man.Down.");
+			replaceEntity(entyDown,selectedName+".mesh");
+		}
+		else if (widgetName == "S_Shoes")
+		{
+			selectedName.insert(0,"First.Man.Shoes.");
+			replaceEntity(entyShoes_L,selectedName+".L.mesh");
+			replaceEntity(entyShoes_R,selectedName+".R.mesh");
+		}
+	}
+	
+}
+
+void DancingGuiSys::createPreviewImage(Ogre::String hairName,Ogre::String upName,Ogre::String downName,Ogre::String shoesName)
+{
+	createPreviewImage("S_Hair",hairName);
+	createPreviewImage("S_Shangzhuang",upName);
+	createPreviewImage("S_Xiazhuang",downName);
+	createPreviewImage("S_Shoes",shoesName);
+}
+
+void DancingGuiSys::replaceEntity(Ogre::Entity * & entyReplaced,Ogre::String newEntyName)
+{
+	//获取场景管理器
+	Ogre::SceneManager * sceneMgr = this->mRoot->getSceneManager("dancingscenemanager");
+
+	if (entyReplaced != NULL)//判断要替换的实体是否已经被创造，若被创造则销毁
+	{
+		entyReplaced->getParentSceneNode()->detachObject(entyReplaced->getName());//解除绑定
+		sceneMgr->destroyEntity(entyReplaced);//销毁实体
+	}
+
+	entyReplaced = sceneMgr->createEntity(newEntyName);//创建实体
+	sceneMgr->getRootSceneNode()->createChildSceneNode(Ogre::Vector3(4.1,-2.5,60))->attachObject(entyReplaced);//绑定实体
 }

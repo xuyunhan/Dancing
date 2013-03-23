@@ -17,6 +17,15 @@ DancingGuiSys::DancingGuiSys(void)
     this->ConfigGuiInfo();//配置mMap
 
     this->mDancingGuiLisener = new DancingGuiLisener();
+
+	//xuyunhan
+	//初始化实体对象指针
+	entyHair = NULL;
+	entyForWomanLongHair = NULL;
+	entyUp = NULL;
+	entyDown = NULL;
+	entyShoes_R = NULL;
+	entyShoes_L = NULL;
 }
 //for singleton
 DancingGuiSys *DancingGuiSys::instance = NULL;
