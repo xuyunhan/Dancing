@@ -39,7 +39,10 @@ void fromVideo::init()
     * 日    期：2013年3月24日
     *******************************************************************/
     //sourceImg = cvLoadImage("01.jpg", 0);//fux add应该从视频中获取一帧  主要是这块耗内存很大
+	for(int i = 0;i<25;i++)
+	{
 	sourceImg = cvQueryFrame(Capture);
+	}
    // cvCopy(sourceImg, targetImg);
 	cvCvtColor(sourceImg, targetImg, CV_BGR2GRAY);
 	cvCvtColor(sourceImg, forGeshiImg, CV_BGR2GRAY);
