@@ -24,7 +24,19 @@ fromCam::fromCam()
     Capture = NULL;
     Capture = cvCaptureFromCAM(-1);
 
-    //IplImage *outImg;
+    sourceImg  = NULL;//= //cvLoadImage("01.jpg", 0);
+    targetImg  = NULL ;
+
+    storage = cvCreateMemStorage(0);
+    contours = 0;
+
+
+    maxRect.height = 1;
+    maxRect.width = 1;
+    maxRect.x = 0;
+    maxRect.y = 0;
+
+
 }
 fromCam::~fromCam()
 {
@@ -70,6 +82,11 @@ void fromCam::init()
         FrMat = cvCreateMat(Frame->height, Frame->width, CV_32FC1);
         FrameMat = cvCreateMat(Frame->height, Frame->width, CV_32FC1);
         AbsMat = cvCreateMat(Frame->height, Frame->width, CV_32FC1);
+
+        sourceImg = cvCreateImage(cvSize(Frame->width, Frame->height), IPL_DEPTH_8U, 1);
+        targetImg =  cvCreateImage(cvSize(Frame->width, Frame->height), IPL_DEPTH_8U, 1);
+
+		outImg = cvCreateImage(cvSize(Frame->width, Frame->height), IPL_DEPTH_8U, 1);
     }
 
 }
@@ -132,13 +149,9 @@ IplImage *fromCam::getOutputFromCam()
     FrImg->origin = 0;
 
 
-    IplImage *sourceImg ;//= //cvLoadImage("01.jpg", 0);
-    sourceImg = cvCreateImage(cvSize(AbsImg->width, AbsImg->height), IPL_DEPTH_8U, 1);
+
+
     cvCopy(FrImg, sourceImg);
-
-
-    IplImage *targetImg ;
-    targetImg =  cvCreateImage(cvSize(sourceImg->width, sourceImg->height), IPL_DEPTH_8U, 1);
     cvCopy(sourceImg, targetImg);
 
     /*******************************************************************
@@ -146,17 +159,16 @@ IplImage *fromCam::getOutputFromCam()
     * 作    者： grius
     * 日    期：2013年3月24日
     *******************************************************************/
-    CvMemStorage *storage = cvCreateMemStorage(0);
-    CvSeq *contours = 0;
 
+
+	cvClearMemStorage( storage );///////这块耗内存很大 需清理
     cvFindContours(targetImg, storage, &contours, sizeof( CvContour ), CV_RETR_EXTERNAL    , CV_CHAIN_APPROX_NONE );
 
-    int i;//测试有几个轮廓
-    CvRect maxRect;
-    maxRect.height = 1;
-    maxRect.width = 1;
-    maxRect.x = 0;
-    maxRect.y = 0;
+   
+
+
+	maxRect.height = 1;
+	maxRect.width = 1;
     for( i = 0; contours != NULL; contours = contours -> h_next, i++ )
     {
         CvRect rect = cvBoundingRect( contours, 0 );
@@ -171,19 +183,26 @@ IplImage *fromCam::getOutputFromCam()
 
 
 
+	cvZero(outImg);
     cvSetImageROI(sourceImg, maxRect); //设置源图像ROI
-    IplImage *outImg = cvCreateImage(cvSize(maxRect.width, maxRect.height), sourceImg->depth, sourceImg->nChannels); //创建目标图像
+	maxRect.x = 0;
+	maxRect.y = 0;
+	cvSetImageROI(outImg,maxRect);
+
+
+	
+    //outImg = cvCreateImage(cvSize(maxRect.width, maxRect.height), sourceImg->depth, sourceImg->nChannels); //创建目标图像
+
+	
+	//outImg->
     cvCopy(sourceImg, outImg); //复制图像
     cvResetImageROI(sourceImg);//源图像用完后，清空ROI
+	cvResetImageROI(outImg);
 
     printf(":%d!\n", i);
     //////////////////////////////
+	
 
-    //显示图像
-
-    //cvShowImage("back", BkImg);
-    //cvShowImage("front", FrImg);
-    //cvShowImage("abs", AbsImg);
 
 
     return outImg;

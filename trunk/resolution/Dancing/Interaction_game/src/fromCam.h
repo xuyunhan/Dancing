@@ -40,8 +40,17 @@ private:
     //
     CvCapture *Capture ;
 
+    IplImage *sourceImg ;//= //cvLoadImage("01.jpg", 0);
+    IplImage *targetImg ;
+
+    CvMemStorage *storage;
+    CvSeq *contours ;
+    CvRect maxRect;
+
 
     IplImage *outImg;
+
+    int i;//≤‚ ‘”–º∏∏ˆ¬÷¿™
 public:
     fromCam();
     ~fromCam();
@@ -49,6 +58,11 @@ public:
     void getBg();
 
     IplImage *getOutputFromCam();
+
+    CvRect getCvRect()
+    {
+        return maxRect;
+    }
 
 
 };
