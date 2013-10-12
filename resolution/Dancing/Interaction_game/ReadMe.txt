@@ -6,7 +6,7 @@
 
 本文件概要介绍组成 Interaction_game 应用程序的
 的每个文件的内容。
-
+55
 
 Interaction_game.vcproj
     这是使用应用程序向导生成的 VC++ 项目的主项目文件，
